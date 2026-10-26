@@ -21,10 +21,13 @@ BASE = "https://www.kaufda.de/{slug}/Sortiment/{brand}"
 UA = "Mozilla/5.0 (compatible; CanRadarBot/1.0; privates Hobbyprojekt)"
 
 # App-Laden -> kaufDA-Seiten (Aldi/Netto haben zwei Seiten)
+# (App-Laden, kaufDA-Seite, Namensteile des Ladens in den Angebotstiteln)
 STORE_PAGES = [
-    ("lidl", "Lidl"), ("netto", "Netto-Marken-Discount"), ("netto", "Netto-Supermarkt"),
-    ("aldi", "Aldi-Sued"), ("aldi", "Aldi-Nord"), ("edeka", "Edeka"),
-    ("kaufland", "Kaufland"), ("penny", "Penny-Markt"), ("rewe", "REWE"),
+    ("lidl", "Lidl", ("lidl",)), ("netto", "Netto-Marken-Discount", ("marken",)),
+    ("netto", "Netto-Supermarkt", ("scottie", "supermarkt")),
+    ("aldi", "Aldi-Sued", ("süd", "sued")), ("aldi", "Aldi-Nord", ("nord",)),
+    ("edeka", "Edeka", ("edeka",)), ("kaufland", "Kaufland", ("kaufland",)),
+    ("penny", "Penny-Markt", ("penny",)), ("rewe", "REWE", ("rewe",)),
 ]
 BRAND_PAGES = {"monster": "Monster-Energy", "redbull": "Red-Bull"}
 # Wie heißt der Laden im Angebotstitel? (kleingeschrieben, "enthält")
@@ -77,20 +80,23 @@ def fetch(url: str) -> str:
 
 def strip_tags(s: str) -> str:
     s = re.sub(r"<(script|style)\b.*?</\1>", " ", s, flags=re.S | re.I)
+    s = re.sub(r"<[^>]*$", " ", s)  # abgeschnittenes Tag am Ende
     s = re.sub(r"<[^>]+>", " ", s)
     return re.sub(r"\s+", " ", html.unescape(s)).strip()
 
 
-def validity(page: str, today: dt.date):
+def validity(page: str, today: dt.date, subs=()):
     """Gibt (start, ende) der aktuell gültigen Prospekt-Zeit zurück oder None."""
-    ranges = set()
+    ranges, viewer = set(), False
     for tag in TAG_IMG.findall(page):
         if "BROCHURE-BOX-VIEWER" in tag:
+            viewer = True
             m = TITLE.search(tag)
-            r = RANGE.search(html.unescape((m.group(1) or m.group(2)) if m else ""))
-            if r:
+            title = html.unescape((m.group(1) or m.group(2)) if m else "")
+            r = RANGE.search(title)
+            if r and (not subs or any(x in title.lower() for x in subs)):
                 ranges.add((d_(*r.group(1, 2, 3)), d_(*r.group(4, 5, 6))))
-    if not ranges:
+    if not ranges and not viewer:
         r = RANGE_TXT.search(strip_tags(page))
         if r:
             ranges.add((d_(*r.group(1, 2, 3)), d_(*r.group(4, 5, 6))))
@@ -125,10 +131,11 @@ def pack_from_total(brand: str, name: str, total_ml: float):
     return None
 
 
-def parse_page(page: str, store: str, brand: str, today: dt.date, log=lambda *a: None):
+def parse_page(page: str, store: str, brand: str, today: dt.date, log=lambda *a: None, subs=None):
     """Liefert die gültigen Angebote dieses Ladens auf der Seite (Liste von dicts)."""
     tags = [(m.start(), m.group(0)) for m in TAG_IMG.finditer(page) if "SEO-OFFER" in m.group(0)]
-    val = validity(page, today)
+    subs = tuple(subs or (STORE_MATCH[store],))
+    val = validity(page, today, subs)
     log(f"   Seite {len(page)} Zeichen, {len(tags)} Angebotsbilder, Gültigkeit: {val}")
     if not val:
         return []
@@ -144,10 +151,10 @@ def parse_page(page: str, store: str, brand: str, today: dt.date, log=lambda *a:
             log(f"   Titel nicht lesbar: {title[:90]!r}")
             continue
         name, price_s, shop = m.group(1).strip(), m.group(2), m.group(3).strip()
-        if STORE_MATCH[store] not in shop.lower() or any(w in name.lower() for w in SKIP_WORDS):
+        if not any(x in shop.lower() for x in subs) or any(w in name.lower() for w in SKIP_WORDS):
             continue
-        end = tags[i + 1][0] if i + 1 < len(tags) else pos + 1500
-        text = strip_tags(page[pos + len(tag): min(end, pos + 1500)])
+        end = tags[i + 1][0] if i + 1 < len(tags) else pos + 8000
+        text = strip_tags(page[pos + len(tag): min(end, pos + 8000)])
         text = re.split(r"Mehr (?:Angebote|Prospekte)", text)[0]
         price = num(price_s)
         prices = [num(p) for p in PRICE.findall(text)]
@@ -159,7 +166,7 @@ def parse_page(page: str, store: str, brand: str, today: dt.date, log=lambda *a:
                 perl = num(mm.group(1))
                 break
         if not perl or perl <= 0:
-            log(f"   {name} {price}: kein Literpreis in {text[:120]!r}")
+            log(f"   {name} {price}: kein Literpreis in {text[:200]!r}")
             continue  # ohne Literpreis ist Größe/Anzahl nicht sicher bestimmbar
         pk = pack_from_total(brand, name, price / perl * 1000)
         if not pk:
@@ -215,12 +222,12 @@ def main() -> int:
     except Exception:  # noqa: BLE001
         old = []
     found, failed, ok_pages = [], set(), 0
-    for store, slug in STORE_PAGES:
+    for store, slug, subs in STORE_PAGES:
         for brand, bslug in BRAND_PAGES.items():
             url = BASE.format(slug=slug, brand=bslug)
             try:
                 page = fetch(url)
-                got = parse_page(page, store, brand, today, print)
+                got = parse_page(page, store, brand, today, print, subs)
                 ok_pages += 1
                 print(f"{url}: {len(got)} Angebot(e)")
                 found += got
