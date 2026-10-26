@@ -30,7 +30,8 @@ BRAND_PAGES = {"monster": "Monster-Energy", "redbull": "Red-Bull"}
 # Wie heißt der Laden im Angebotstitel? (kleingeschrieben, "enthält")
 STORE_MATCH = {"lidl": "lidl", "netto": "netto", "aldi": "aldi", "edeka": "edeka",
                "kaufland": "kaufland", "penny": "penny", "rewe": "rewe"}
-SIZES = {"monster": [500, 355, 473], "redbull": [250, 355, 473]}
+SIZES = {"monster": [500, 355, 473, 440, 330], "redbull": [250, 330, 355, 473]}
+ALL_SIZES = [250, 330, 355, 440, 473, 500]
 # Normalpreis pro Liter, wenn die Seite keinen Streichpreis nennt (Dose 0,5 l = 1,59 / 0,25 l = 1,49)
 REF_PER_L = {"monster": 3.18, "redbull": 5.96}
 SKIP_WORDS = ("cola", "kalender", "tray", "box", "geschenk")
@@ -46,6 +47,7 @@ PERL = [
 ]
 RANGE = re.compile(r"gültig von (\d{2})\.(\d{2})\.(\d{4}) bis (\d{2})\.(\d{2})\.(\d{4})")
 RANGE_TXT = re.compile(r"vom (\d{2})\.(\d{2})\.(\d{4}) bis (\d{2})\.(\d{2})\.(\d{4}) gültig")
+RANGE_SHORT = re.compile(r"\b\w{2}\. (\d{1,2})\.(\d{1,2})\.\s*-\s*\w{2}\. (\d{1,2})\.(\d{1,2})\.(\d{4})")
 PACK = re.compile(r"(\d+)\s*[x×]\s*(\d+(?:[.,]\d+)?)\s*(ml|l)\b", re.I)
 
 
@@ -92,6 +94,16 @@ def validity(page: str, today: dt.date):
         r = RANGE_TXT.search(strip_tags(page))
         if r:
             ranges.add((d_(*r.group(1, 2, 3)), d_(*r.group(4, 5, 6))))
+    if not ranges:
+        for r in RANGE_SHORT.finditer(strip_tags(page)):
+            try:
+                end = d_(r.group(3), r.group(4), r.group(5))
+                start = d_(r.group(1), r.group(2), end.year)
+                if start > end:
+                    start = d_(r.group(1), r.group(2), end.year - 1)
+                ranges.add((start, end))
+            except ValueError:
+                pass
     now = [x for x in ranges if x[0] <= today <= x[1]]
     return min(now, key=lambda x: x[1]) if now else None
 
@@ -107,25 +119,29 @@ def pack_from_total(brand: str, name: str, total_ml: float):
         n = round(total_ml / ml)
         if 1 <= n <= 24 and abs(n * ml - total_ml) / total_ml < 0.03:
             return ml, n
-    if 150 <= total_ml <= 1000:
-        return int(round(total_ml / 25) * 25), 1
+    for ml in ALL_SIZES:  # Einzeldose in üblicher Größe (4 % Toleranz)
+        if abs(ml - total_ml) / ml < 0.04:
+            return ml, 1
     return None
 
 
-def parse_page(page: str, store: str, brand: str, today: dt.date):
+def parse_page(page: str, store: str, brand: str, today: dt.date, log=lambda *a: None):
     """Liefert die gültigen Angebote dieses Ladens auf der Seite (Liste von dicts)."""
+    tags = [(m.start(), m.group(0)) for m in TAG_IMG.finditer(page) if "SEO-OFFER" in m.group(0)]
     val = validity(page, today)
+    log(f"   Seite {len(page)} Zeichen, {len(tags)} Angebotsbilder, Gültigkeit: {val}")
     if not val:
         return []
     until = val[1]
-    tags = [(m.start(), m.group(0)) for m in TAG_IMG.finditer(page) if "SEO-OFFER" in m.group(0)]
     out = []
     for i, (pos, tag) in enumerate(tags):
         t = TITLE.search(tag)
         if not t:
             continue
-        m = OFFER_TITLE.match(html.unescape(t.group(1) or t.group(2)))
+        title = html.unescape(t.group(1) or t.group(2))
+        m = OFFER_TITLE.match(title)
         if not m:
+            log(f"   Titel nicht lesbar: {title[:90]!r}")
             continue
         name, price_s, shop = m.group(1).strip(), m.group(2), m.group(3).strip()
         if STORE_MATCH[store] not in shop.lower() or any(w in name.lower() for w in SKIP_WORDS):
@@ -143,9 +159,11 @@ def parse_page(page: str, store: str, brand: str, today: dt.date):
                 perl = num(mm.group(1))
                 break
         if not perl or perl <= 0:
+            log(f"   {name} {price}: kein Literpreis in {text[:120]!r}")
             continue  # ohne Literpreis ist Größe/Anzahl nicht sicher bestimmbar
         pk = pack_from_total(brand, name, price / perl * 1000)
         if not pk:
+            log(f"   {name} {price}: Größe unklar (Gesamtmenge {price / perl * 1000:.0f} ml)")
             continue
         ml, n = pk
         item = {"s": store, "b": brand, "ml": ml, "n": n, "price": round(price, 2),
@@ -187,7 +205,11 @@ def clean(items, today: dt.date):
 
 
 def main() -> int:
-    today = dt.date.today()
+    try:
+        from zoneinfo import ZoneInfo
+        today = dt.datetime.now(ZoneInfo("Europe/Berlin")).date()
+    except Exception:  # noqa: BLE001
+        today = dt.date.today()
     try:
         old = json.loads(OUT.read_text(encoding="utf-8")).get("deals", [])
     except Exception:  # noqa: BLE001
@@ -198,7 +220,7 @@ def main() -> int:
             url = BASE.format(slug=slug, brand=bslug)
             try:
                 page = fetch(url)
-                got = parse_page(page, store, brand, today)
+                got = parse_page(page, store, brand, today, print)
                 ok_pages += 1
                 print(f"{url}: {len(got)} Angebot(e)")
                 found += got
