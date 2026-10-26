@@ -1,0 +1,15 @@
+{
+  "generated": "2026-10-26T00:00:00Z",
+  "stand": "2026-10-26",
+  "deals": [
+    {"s":"netto","b":"monster","ml":500,"n":1,"price":0.88,"was":1.59,"until":"2026-10-31"},
+    {"s":"penny","b":"monster","ml":500,"n":1,"price":0.99,"was":1.59,"until":"2026-10-31"},
+    {"s":"kaufland","b":"redbull","ml":250,"n":1,"price":0.88,"was":1.49,"until":"2026-10-31"},
+    {"s":"aldi","b":"redbull","ml":250,"n":1,"price":0.89,"was":1.49,"until":"2026-10-30","note":"Aldi Süd und Nord"},
+    {"s":"penny","b":"redbull","ml":250,"n":1,"price":0.99,"was":1.49,"until":"2026-10-31","note":"0,88 € mit Penny-App"},
+    {"s":"lidl","b":"redbull","ml":250,"n":6,"price":4.99,"was":7.49,"until":"2026-10-31","note":"zzgl. Pfand"}
+  ],
+  "empty": {
+    "edeka": "Edeka hat Red Bull diese Woche nur zum normalen Preis von 1,49 € im Prospekt. Ein Angebot mit Rabatt habe ich nicht gefunden."
+  }
+}
