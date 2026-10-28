@@ -1,7 +1,7 @@
 name: Angebote aktualisieren
 on:
   schedule:
-     - cron: "*/30 * * * *"   # alle 30 Minuten
+      - cron: "7,37 * * * *"
   workflow_dispatch: {}       # zusätzlich per Knopfdruck startbar
 permissions:
   contents: write
