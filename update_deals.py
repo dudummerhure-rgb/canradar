@@ -39,8 +39,8 @@ STORE_PAGES = [
 BRAND_PAGES = {"monster": "Monster-Energy", "redbull": "Red-Bull"}
 BRAND_WORDS = {"monster": ("monster",), "redbull": ("red bull", "redbull")}
 STORES = {s for s, _, _ in STORE_PAGES}
-SIZES = {"monster": [500, 355, 473, 440, 330], "redbull": [250, 330, 355, 473]}
-ALL_SIZES = [250, 330, 355, 440, 473, 500]
+SIZES = {"monster": [500, 355, 473, 330], "redbull": [250, 330, 355, 473]}
+ALL_SIZES = [250, 330, 355, 473, 500]  # 440 ml gibt es bei Monster/Red Bull in Deutschland nicht
 # Normalpreis pro Liter, wenn die Seite keinen Streichpreis nennt (Dose 0,5 l = 1,59 / 0,25 l = 1,49)
 REF_PER_L = {"monster": 3.18, "redbull": 5.96}
 SKIP_WORDS = ("cola", "kalender", "tray", "box", "geschenk")
@@ -135,6 +135,8 @@ def pack_from_total(brand: str, name: str, total_ml: float):
         n = round(total_ml / ml)
         if 1 <= n <= 24 and abs(n * ml - total_ml) / total_ml < 0.03:
             return ml, n
+    if brand == "monster" and 400 <= total_ml <= 560:
+        return 500, 1  # Monster-Dose in Deutschland: 500 ml (ungenaue Literpreise der Seite abfangen)
     for ml in ALL_SIZES:  # Einzeldose in üblicher Größe (4 % Toleranz)
         if abs(ml - total_ml) / ml < 0.04:
             return ml, 1
