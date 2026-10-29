@@ -1,0 +1,125 @@
+# Can Radar: Meldung aufs iPhone, sobald neue Monster- oder Red-Bull-Angebote in der deals.json stehen.
+# (Ersatz für die Hintergrund-Prüfung der Android-App. Auf dem iPhone kann eine Web-App das nicht selbst.)
+# Läuft kostenlos bei GitHub, jede Stunde. Die Meldung kommt über die kostenlose iPhone-App "ntfy".
+#
+# Einrichten: Repository -> Settings -> Secrets and variables -> Actions -> New repository secret
+#   Name:  NTFY_TOPIC
+#   Wert:  dasselbe Thema, das du in der Can-Radar-App (Einstellungen -> Benachrichtigungen) eingetragen hast.
+
+name: Can Radar Meldungen
+
+on:
+  schedule:
+    - cron: '47 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: canradar-notify
+  cancel-in-progress: false
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Zuletzt gemeldete Angebote laden
+        uses: actions/cache/restore@v4
+        with:
+          path: seen.json
+          key: canradar-seen-start
+          restore-keys: canradar-seen-
+
+      - name: Neue Angebote suchen und melden
+        env:
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          DATA_URL: https://raw.githubusercontent.com/dudummerhure-rgb/canradar/main/deals.json
+          NTFY_URL: https://ntfy.sh
+          APP_URL: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        run: |
+          python3 - <<'PY'
+          import json, os, sys, time, urllib.request, urllib.error
+          from datetime import datetime
+          from zoneinfo import ZoneInfo
+
+          topic = os.environ.get('NTFY_TOPIC', '').strip()
+          if not topic:
+              print('Kein Secret NTFY_TOPIC eingetragen. Siehe Anleitung, Schritt 6. Nichts zu tun.')
+              sys.exit(0)
+
+          def http(url, data=None, headers=None):
+              req = urllib.request.Request(url, data=data, headers=dict(headers or {}, **{'User-Agent': 'canradar-notify'}),
+                                           method='POST' if data is not None else 'GET')
+              with urllib.request.urlopen(req, timeout=30) as r:
+                  return r.read().decode('utf-8')
+
+          try:
+              deals = json.loads(http(os.environ['DATA_URL'] + '?t=' + str(int(time.time()))))['deals']
+          except Exception as e:
+              print('deals.json nicht lesbar (' + str(e) + '). Naechster Versuch in einer Stunde.')
+              sys.exit(0)
+
+          today = datetime.now(ZoneInfo('Europe/Berlin')).strftime('%Y-%m-%d')
+          STORES = {'lidl': 'Lidl', 'netto': 'Netto', 'aldi': 'Aldi', 'edeka': 'Edeka',
+                    'kaufland': 'Kaufland', 'penny': 'Penny', 'rewe': 'REWE'}
+          TITLES = {'monster': 'Monster ist im Angebot', 'redbull': 'Red Bull ist im Angebot'}
+
+          def euro(v):
+              return ('%.2f' % v).replace('.', ',') + ' €'
+
+          try:
+              seen = set(json.load(open('seen.json')))
+          except Exception:
+              seen = None   # erster Lauf: alles Aktuelle melden (wie die Android-App)
+
+          now, fresh = set(), {}
+          for d in deals:
+              b, s = d.get('b', ''), d.get('s', '')
+              until, price, was = str(d.get('until', '')), float(d.get('price') or -1), float(d.get('was') or -1)
+              if b not in TITLES or price <= 0 or len(until) < 10 or until < today:
+                  continue
+              n, ml = int(d.get('n') or 1), int(d.get('ml') or 0)
+              key = '|'.join([s, b, str(ml), str(n), str(price), until])
+              now.add(key)
+              if seen is None or key not in seen:
+                  line = STORES.get(s, s) + ': '
+                  if n > 1:
+                      line += '%d × %d ml ' % (n, ml)
+                  line += euro(price)
+                  if was > price:
+                      line += ' (statt ' + euro(was) + ')'
+                  line += ' · bis %s.%s.' % (until[8:10], until[5:7])
+                  fresh.setdefault(b, []).append((key, line))
+
+          failed = set()
+          for b, items in fresh.items():
+              lines = [l for _, l in items]
+              msg = '\n'.join(lines)
+              body = json.dumps({'topic': topic, 'title': TITLES[b], 'message': msg, 'tags': ['zap'],
+                                 'click': os.environ.get('APP_URL', '')}).encode('utf-8')
+              ok = False
+              for attempt in range(3):
+                  try:
+                      http(os.environ['NTFY_URL'].rstrip('/') + '/', body, {'Content-Type': 'application/json'})
+                      ok = True
+                      break
+                  except Exception as e:
+                      print('Senden fehlgeschlagen (' + str(e) + '), Versuch ' + str(attempt + 1))
+                      time.sleep(6)
+              print(('Gemeldet: ' if ok else 'NICHT gemeldet: ') + TITLES[b] + ' (' + str(len(lines)) + ')')
+              if not ok:
+                  failed.update(k for k, _ in items)
+
+          # nicht gemeldete Angebote nicht als "gesehen" speichern, damit der naechste Lauf es nochmal versucht
+          json.dump(sorted(now - failed), open('seen.json', 'w'))
+          print('Aktive Angebote:', len(now), '| neu:', sum(len(v) for v in fresh.values()))
+          PY
+
+      - name: Stand speichern
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: seen.json
+          key: canradar-seen-${{ github.run_id }}
