@@ -1,0 +1,967 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Can Radar</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Can Radar">
+<meta name="format-detection" content="telephone=no">
+<meta name="theme-color" content="#0d1020">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32.png">
+<script src="bridge.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=Unbounded:wght@700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600&family=Unbounded:wght@700;800&display=swap"></noscript>
+<style>
+:root{--bg:#0d1020;--sf:#171b33;--sf2:#222849;--tx:#f2f4ff;--mu:#9aa2cc;--mon:#7dff3a;--monink:#0a1a04;--rb:#5b86ff;--bad:#ff4d5e;--gold:#ffd23f;--ok:#7dff3a;--caf:#b583ff;--lg1:#9747ff;--lg2:#c79bff;--warn:#ffb020;--bg2:#0d1020;--ga:rgba(91,134,255,.28);--gb:rgba(125,255,58,.14);color-scheme:dark;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#eef0fa;--bg2:#eef0fa;--sf:#fff;--sf2:#e3e7f6;--tx:#14183a;--mu:#5a628c;--mon:#2f9a00;--monink:#fff;--rb:#2a52d6;--gold:#b36b00;--ok:#2f9a00;--caf:#7a2fe0;color-scheme:light}}
+:root[data-theme="light"]{--bg:#eef0fa;--bg2:#eef0fa;--sf:#fff;--sf2:#e3e7f6;--tx:#14183a;--mu:#5a628c;--mon:#2f9a00;--monink:#fff;--rb:#2a52d6;--gold:#b36b00;--ok:#2f9a00;--caf:#7a2fe0;color-scheme:light}
+*{box-sizing:border-box}
+html,body{margin:0}
+html{background:var(--bg)}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(520px 260px at 95% -4%,var(--ga),transparent 70%),radial-gradient(460px 260px at -8% 6%,var(--gb),transparent 70%),linear-gradient(180deg,var(--bg2),var(--bg))}
+body{color:var(--tx);font:500 16px/1.4 Barlow,system-ui,sans-serif;padding-bottom:92px;min-height:100vh;min-height:calc(100dvh - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+h1,h2,h3,.cd{font-family:"Barlow Condensed",Impact,sans-serif;font-weight:800;margin:0}
+header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 4px;max-width:640px;margin:0 auto}
+.logo{display:flex;align-items:center;gap:10px;min-width:0}
+.gear{flex:none;width:38px;height:38px;border-radius:12px;border:0;background:var(--sf);color:var(--tx);display:grid;place-items:center;cursor:pointer}
+.gear svg{width:22px;height:22px;fill:currentColor}
+.logo b{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--lg1),var(--lg2));display:grid;place-items:center;transform:rotate(-6deg)}
+.logo svg{width:22px;height:22px;fill:#000}
+header h1{font-size:30px;line-height:1;transform:skew(-6deg)}
+.pill{flex:none;white-space:nowrap;font:500 13px Barlow,system-ui,sans-serif;color:var(--mu);background:var(--sf);padding:6px 12px;border-radius:99px;border:0;cursor:pointer}
+main{max-width:640px;margin:0 auto;padding:6px 16px 24px}
+section{display:none}section.on{display:block}
+[hidden]{display:none!important}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:6px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:inline-flex;align-items:center;gap:7px;border:0;background:var(--sf);color:var(--tx);font:600 14px Barlow,sans-serif;padding:8px 14px;border-radius:99px;cursor:pointer}
+.chip i{width:10px;height:10px;border-radius:50%;background:var(--c,var(--mu))}
+.chip.on{background:var(--on,var(--tx));color:var(--onx,var(--bg))}
+button:focus-visible,a:focus-visible,select:focus-visible{outline:3px solid var(--rb);outline-offset:2px}
+.hero{position:relative;overflow:hidden;border-radius:24px;padding:20px 18px;margin:6px 0 16px;color:#fff;min-height:190px;background:linear-gradient(135deg,var(--h1),var(--h2));box-shadow:0 14px 30px -12px var(--h2)}
+.hero small{display:block;font-size:14px;opacity:.85}
+.hero .big{font:800 84px/.9 "Barlow Condensed",sans-serif;margin:6px 0 8px}
+.hero .t{font:700 20px/1.15 "Barlow Condensed",sans-serif;max-width:60%}
+.hero .t em{font-style:normal;color:var(--gold)}
+.hero svg{position:absolute;right:8px;bottom:-16px;height:200px;transform:rotate(9deg);filter:drop-shadow(0 14px 18px rgba(0,0,0,.5))}
+.sp{display:inline-block;padding:2px 11px;border-radius:99px;font:800 16px "Barlow Condensed",sans-serif;background:var(--sb);color:var(--sf0)}
+.deal{display:grid;grid-template-columns:60px 1fr auto;gap:12px;align-items:center;background:var(--sf);border-radius:20px;padding:12px 14px 12px 18px;margin-bottom:10px;position:relative;overflow:hidden}
+.deal::before{content:"";position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--sb)}
+.deal .can{display:flex;justify-content:center}
+.deal .can svg{height:76px;filter:drop-shadow(0 5px 6px rgba(0,0,0,.4))}
+.pn{display:block;font:700 19px/1.15 "Barlow Condensed",sans-serif;margin-top:5px}
+.mini{font-size:13px;color:var(--mu)}
+.pr{text-align:right}
+.pr b{font:800 34px/1 "Barlow Condensed",sans-serif;color:var(--gold);display:block}
+.pr s{color:var(--mu);font-size:13px}
+.pr em{display:inline-block;margin-left:6px;font:800 15px "Barlow Condensed",sans-serif;font-style:normal;background:var(--bad);color:#fff;padding:1px 8px;border-radius:8px}
+.left{height:5px;border-radius:3px;background:var(--sf2);margin-top:8px;overflow:hidden}
+.left span{display:block;height:100%;border-radius:3px;background:linear-gradient(90deg,var(--mon),var(--gold))}
+.rt{grid-column:1/-1;display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--mu)}
+.rt a{color:var(--tx);background:var(--sf2);text-decoration:none;font-weight:600;padding:7px 14px;border-radius:99px}
+.card{background:var(--sf);border-radius:20px;padding:16px;margin-bottom:12px}
+.empty{text-align:center;color:var(--mu);padding:30px 14px}
+.note{font-size:12px;color:var(--mu);margin:10px 4px}
+.loc{display:flex;align-items:center;gap:10px;margin:8px 0 14px;font-size:14px;color:var(--mu)}
+.loc i{flex:none;width:12px;height:12px;border-radius:50%;background:var(--warn);box-shadow:0 0 0 5px rgba(255,176,32,.2)}
+.loc.ok i{background:var(--ok);box-shadow:0 0 0 5px rgba(125,255,58,.2)}
+.loc button{margin-left:auto;flex:none}
+.shop{background:var(--sf);border-radius:20px;margin-bottom:14px;overflow:hidden}
+.sh{padding:12px 16px;font:800 28px "Barlow Condensed",sans-serif;display:flex;justify-content:space-between;align-items:center;background:var(--sb);color:var(--sf0)}
+.sh em{font:800 16px "Barlow Condensed",sans-serif;font-style:normal;background:var(--bad);color:#fff;padding:2px 10px;border-radius:8px}
+.ln{display:flex;align-items:center;gap:12px;padding:10px 16px;border-bottom:1px solid var(--sf2)}
+.ln svg{height:46px;flex:none}
+.ln>span{flex:1}
+.ln b{font:800 24px "Barlow Condensed",sans-serif;color:var(--gold)}
+.go{display:block;text-align:center;background:var(--on,var(--tx));color:var(--onx,var(--bg));font:800 20px "Barlow Condensed",sans-serif;padding:13px;text-decoration:none}
+.datebar{display:flex;align-items:center;justify-content:space-between;margin:6px 0 12px}
+.datebar button{background:var(--sf);border:0;color:var(--tx);width:46px;height:46px;border-radius:14px;font-size:24px;cursor:pointer}
+.datebar h2{font-size:30px}
+.ringcard{display:flex;align-items:center;gap:18px}
+.ringwrap{position:relative;width:132px;height:132px;flex:none}
+.ringwrap svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ringwrap circle{fill:none;stroke-width:11;stroke-linecap:round}
+.ringwrap .bg{stroke:var(--sf2)}
+.ringwrap .fg{transition:stroke-dasharray .5s,stroke .3s}
+.rtxt{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.rtxt b{font:800 34px/1 "Barlow Condensed",sans-serif}
+.rtxt span{font-size:11px;line-height:1.25;color:var(--mu);white-space:nowrap}
+.stats{flex:1;display:grid;gap:10px}
+.stats div b{font:800 28px/1 "Barlow Condensed",sans-serif;display:block}
+.stats div i{font-style:normal;font-size:13px;color:var(--mu)}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--sf2);border-radius:14px;padding:4px;margin-bottom:10px;gap:4px}
+.seg button{border:0;background:none;color:var(--mu);font:800 18px "Barlow Condensed",sans-serif;padding:10px;border-radius:11px;cursor:pointer}
+.seg button.on{background:var(--on,var(--tx));color:var(--onx,var(--bg))}
+.seg button.on.m{background:var(--lg1);color:#fff}
+.seg button.on.r{background:var(--rb);color:#fff}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;font-size:13px;color:var(--mu);margin:6px 0 4px}
+html[data-btn="black"]{--on:#000;--onx:#fff}
+html[data-btn="black"] .chip.on,html[data-btn="black"] .seg button.on:not(.m):not(.r),html[data-btn="black"] nav button.on,html[data-btn="black"] .go{box-shadow:inset 0 0 0 2px var(--mu)}
+#calGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px}
+#calGrid .wd{font-size:11px;color:var(--mu);text-align:center;padding-bottom:2px}
+#calGrid button{aspect-ratio:1;border:0;border-radius:12px;background:var(--sf2);color:var(--tx);font:600 14px Barlow,system-ui,sans-serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;padding:0}
+#calGrid button small{font-size:10px;font-weight:800;line-height:1}
+#calGrid button.l1{background:rgba(151,71,255,.38)}
+#calGrid button.l2{background:rgba(255,176,32,.45)}
+#calGrid button.l3{background:rgba(255,77,94,.5)}
+#calGrid button.td{box-shadow:inset 0 0 0 2px var(--rb)}
+#calGrid button.sel{outline:3px solid var(--tx);outline-offset:1px}
+#calGrid button:disabled{opacity:.3;cursor:default}
+.calhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.calhead button{background:var(--sf2);border:0;color:var(--tx);width:40px;height:40px;border-radius:12px;font-size:22px;cursor:pointer}
+.calhead button:disabled{opacity:.3}
+.calhead h3{font-size:26px;text-transform:capitalize}
+.calleg{display:flex;gap:12px;flex-wrap:wrap;font-size:11px;color:var(--mu);margin-top:10px}
+.calleg i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.mgrid div{background:var(--sf2);border-radius:14px;padding:10px 12px}
+.mgrid b{font:800 30px/1 "Barlow Condensed",sans-serif;display:block}
+.mgrid i{font-style:normal;font-size:12px;color:var(--mu)}
+.mgrid .mon b{color:var(--mon)}.mgrid .rb b{color:var(--rb)}
+input[type=number],input[type=text]{width:100%;background:var(--sf2);color:var(--tx);border:0;border-radius:12px;padding:13px;font:500 16px Barlow,sans-serif}
+select{width:100%;background:var(--sf2);color:var(--tx);border:0;border-radius:12px;padding:13px;font:500 16px Barlow,sans-serif}
+.btn{width:100%;margin-top:14px;border:0;border-radius:14px;padding:15px;font:800 22px "Barlow Condensed",sans-serif;background:var(--lg1);color:#fff;cursor:pointer}
+.btn.r{background:var(--rb);color:#fff}
+.ent{display:flex;align-items:center;gap:12px;background:var(--sf);border-radius:16px;padding:12px 14px;margin-bottom:8px}
+.ent i{width:10px;align-self:stretch;border-radius:5px}
+.ent div{flex:1}
+.ent button{border:0;background:var(--sf2);color:var(--tx);border-radius:10px;padding:8px 12px;font:600 13px Barlow,sans-serif;cursor:pointer}
+.week{display:flex;gap:8px;align-items:end;height:100px;margin-top:8px}
+.week div{flex:1;text-align:center;font-size:12px;color:var(--mu)}
+.week em{display:block;background:linear-gradient(var(--mon),var(--rb));border-radius:6px 6px 2px 2px;min-height:4px;margin-bottom:5px}
+.sum{display:grid;grid-template-columns:repeat(4,1fr);text-align:center;margin-top:14px;gap:6px}
+.sum b{font:800 24px/1 "Barlow Condensed",sans-serif;display:block}
+.sum i{font-style:normal;font-size:12px;color:var(--mu)}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;gap:6px;justify-content:center;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 35%)}
+nav .in{display:flex;gap:4px;background:var(--sf);border-radius:22px;padding:6px;width:100%;max-width:420px;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+nav button{flex:1;border:0;background:none;color:var(--mu);font:600 13px Barlow,sans-serif;padding:8px 4px;border-radius:16px;cursor:pointer;display:grid;justify-items:center;gap:2px}
+nav svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{background:var(--on,var(--tx));color:var(--onx,var(--bg))}
+.sheet{position:fixed;inset:0;z-index:50;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55)}
+.panel{background:var(--bg);color:var(--tx);width:100%;max-width:640px;max-height:90vh;overflow:auto;border-radius:24px 24px 0 0;padding:16px 16px calc(22px + env(safe-area-inset-bottom,0px))}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.ph h2{font-size:32px}
+.x{width:42px;height:42px;border:0;border-radius:14px;background:var(--sf);color:var(--tx);font-size:20px;cursor:pointer}
+.panel .card h3{font-size:24px;margin-bottom:6px}
+.panel .btn{margin-top:10px}
+.btn2{width:100%;margin-top:10px;border:0;border-radius:14px;padding:13px;font:800 18px "Barlow Condensed",sans-serif;background:var(--sf2);color:var(--tx);cursor:pointer}
+.made{text-align:center;margin:20px 0 6px;font:800 15px/1.3 Unbounded,"Barlow Condensed",system-ui,sans-serif;letter-spacing:.16em;text-transform:uppercase;background:linear-gradient(90deg,var(--lg1),var(--lg2),#e0c8ff,var(--lg2),var(--lg1));background-size:250% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 12px rgba(151,71,255,.55));animation:shine 4s linear infinite}
+.made::before,.made::after{content:"";display:block;height:2px;width:56px;margin:0 auto;border-radius:2px;background:linear-gradient(90deg,transparent,var(--lg1),transparent)}
+.made::before{margin-bottom:10px}.made::after{margin-top:10px}
+@keyframes shine{to{background-position:200% 0}}
+.scChips{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.scc{font:600 13px Barlow,sans-serif;padding:5px 10px;border-radius:99px;background:var(--sf2);color:var(--mu)}
+.scc.ok{background:var(--caf);color:#fff}
+.scNext{background:var(--sf2);border-left:4px solid var(--caf);border-radius:12px;padding:10px 12px;margin-top:10px;font-size:14px;line-height:1.4}
+.scNext.ok{border-left-color:var(--ok)}.scNext.warn{border-left-color:var(--warn)}
+.scNext>b:first-child{display:block;font:800 18px/1.15 "Barlow Condensed",sans-serif;margin-bottom:4px}
+.scNext ol{margin:6px 0 0;padding-left:20px}.scNext li{margin:4px 0}
+.scNext small{color:var(--mu);font-size:12.5px}
+.btn:disabled{opacity:.6}
+.seg.s3{grid-template-columns:1fr 1fr 1fr}
+.seg.s3 button{font-size:17px;padding:10px 4px}
+.bgs{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:6px}
+.sw{border:0;background:none;padding:0;cursor:pointer;color:var(--mu);font:600 12px Barlow,sans-serif;text-align:center}
+.sw i{display:block;height:54px;border-radius:14px;border:3px solid var(--sf2);margin-bottom:4px}
+.sw.on i{border-color:var(--tx)}
+.sw.on{color:var(--tx)}
+.seg button:disabled{opacity:.35;cursor:default}
+.prev{background:var(--sf2);border-radius:14px;padding:10px 12px;margin-top:12px;font-size:14px;line-height:1.35}
+.prev b{font:800 20px/1.1 "Barlow Condensed",sans-serif}
+.prev small{display:block;color:var(--mu);font-size:12px;margin-top:3px}
+.prev.warn{box-shadow:inset 0 0 0 2px var(--warn)}
+.prev.warn small{color:var(--warn);font-weight:600}
+.ent .acts{flex:none;display:flex;gap:6px}
+.ent .acts .dup{background:var(--on,var(--tx));color:var(--onx,var(--bg))}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(88px + env(safe-area-inset-bottom,0px));z-index:60;display:flex;align-items:center;gap:12px;background:var(--tx);color:var(--bg);padding:10px 12px 10px 16px;border-radius:14px;font:600 14px Barlow,sans-serif;box-shadow:0 8px 24px rgba(0,0,0,.4);max-width:92vw}
+.toast button{border:0;background:var(--bg);color:var(--tx);border-radius:10px;padding:7px 12px;font:700 13px Barlow,sans-serif;cursor:pointer}
+@media (prefers-reduced-motion:reduce){.ringwrap .fg{transition:none}}
+/* Feinschliff: weichere Übergänge, Druck-Rückmeldung, ruhigeres Scrollen */
+html{-webkit-tap-highlight-color:transparent;scroll-behavior:smooth;-webkit-text-size-adjust:100%}
+body{-webkit-font-smoothing:antialiased;overscroll-behavior-y:none}
+button,select,input{-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{transition:transform .12s ease,opacity .15s ease,background-color .2s ease,color .2s ease,box-shadow .2s ease}
+button:not(:disabled):active{transform:scale(.96)}
+button:disabled{opacity:.45}
+.card{transition:box-shadow .2s ease,background-color .25s ease;box-shadow:0 1px 0 rgba(255,255,255,.04) inset,0 6px 18px rgba(0,0,0,.14)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .card{box-shadow:0 4px 14px rgba(40,50,110,.08)}}
+:root[data-theme="light"] .card{box-shadow:0 4px 14px rgba(40,50,110,.08)}
+section.on{animation:vin .26s ease both}
+@keyframes vin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.card,.ent{animation:cin .3s ease both}
+@keyframes cin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+input[type=number],input[type=text],select{transition:box-shadow .15s ease}
+input:focus,select:focus{outline:none;box-shadow:0 0 0 2px var(--caf)}
+.scNext,.prev,.toast{animation:cin .25s ease both}
+.panel{animation:pin .28s cubic-bezier(.2,.8,.2,1) both}
+@keyframes pin{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+/* ===== iPhone-Version ===== */
+#sbar{position:fixed;top:0;left:0;right:0;height:env(safe-area-inset-top,0px);background:var(--sbar,var(--bg2));z-index:300;pointer-events:none}
+button,nav,.chip,.pill,.seg,.sw{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.steps{margin:8px 0 0;padding-left:20px;font-size:14px;line-height:1.4;color:var(--tx)}.steps li{margin:5px 0}
+textarea{width:100%;min-height:110px;background:var(--sf2);color:var(--tx);border:0;border-radius:12px;padding:13px;font:500 16px/1.35 Barlow,system-ui,sans-serif;resize:vertical}
+textarea:focus{outline:none;box-shadow:0 0 0 2px var(--caf)}
+#errLine{display:block;font-size:11px;color:var(--mu);white-space:pre-wrap;word-break:break-word;margin:8px 4px;text-align:center}
+#instPop{z-index:320}
+#crLive{position:fixed;inset:0;z-index:250;background:#000;color:#fff}
+#crLive video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.crFrame{position:absolute;left:8%;right:8%;top:50%;height:30%;transform:translateY(-50%);border:3px solid #fff;border-radius:18px;box-shadow:0 0 0 100vmax rgba(0,0,0,.45);overflow:hidden}
+.crFrame i{position:absolute;left:0;right:0;top:50%;height:2px;background:var(--lg1);box-shadow:0 0 12px 2px var(--lg1);animation:crscan 1.8s ease-in-out infinite alternate}
+@keyframes crscan{from{top:12%}to{top:88%}}
+.crTop{position:absolute;left:0;right:0;top:0;padding:calc(18px + env(safe-area-inset-top,0px)) 18px 14px;text-align:center;background:linear-gradient(rgba(0,0,0,.65),transparent)}
+.crTop b{display:block;font:800 24px/1.1 "Barlow Condensed",system-ui,sans-serif}
+.crTop span{font-size:14px;opacity:.85}
+.crBot{position:absolute;left:0;right:0;bottom:0;display:flex;gap:10px;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.7))}
+.crBot button{flex:1;border:0;border-radius:14px;padding:14px;font:800 20px "Barlow Condensed",system-ui,sans-serif;background:rgba(255,255,255,.2);color:#fff}
+#crLive .crBot #crLiveX{background:#fff;color:#000}
+</style>
+</head>
+<body>
+<div id="sbar" aria-hidden="true"></div>
+<header>
+  <div class="logo"><button class="gear" id="gear" aria-label="Einstellungen"><svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M19.51 10.81 L22.45 11.01 L22.45 12.99 L19.51 13.19 L18.15 16.47 L20.09 18.69 L18.69 20.09 L16.47 18.15 L13.19 19.51 L12.99 22.45 L11.01 22.45 L10.81 19.51 L7.53 18.15 L5.31 20.09 L3.91 18.69 L5.85 16.47 L4.49 13.19 L1.55 12.99 L1.55 11.01 L4.49 10.81 L5.85 7.53 L3.91 5.31 L5.31 3.91 L7.53 5.85 L10.81 4.49 L11.01 1.55 L12.99 1.55 L13.19 4.49 L16.47 5.85 L18.69 3.91 L20.09 5.31 L18.15 7.53ZM15.2 12A3.2 3.2 0 1 0 8.8 12A3.2 3.2 0 1 0 15.2 12Z"/></svg></button><b><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg></b><h1>Can Radar</h1></div>
+  <button class="pill" id="stand" aria-label="Angebote jetzt aktualisieren"></button>
+</header>
+<main>
+
+<section id="deals" class="on">
+  <div class="chips" id="fs"></div>
+  <div class="chips" id="fb"></div>
+  <div id="hero"></div>
+  <div id="dlist"></div>
+</section>
+
+<section id="near">
+  <div class="loc" id="loc"><i></i><span id="locTxt">Standort wird abgefragt …</span><button class="chip" id="locBtn">Neu</button></div>
+  <div id="nearList"></div>
+</section>
+
+<section id="track">
+  <div class="card">
+   <div class="calhead"><button id="cPrev" aria-label="Vorheriger Monat">‹</button><h3 id="cTitle"></h3><button id="cNext" aria-label="Nächster Monat">›</button></div>
+   <div id="calGrid"></div>
+   <div class="calleg"><span><i style="background:rgba(151,71,255,.7)"></i>im Ziel</span><span><i style="background:rgba(255,176,32,.8)"></i>über 70 %</span><span><i style="background:rgba(255,77,94,.8)"></i>über Ziel</span><span>Zahl = Dosen</span></div>
+   <button class="btn2" id="cSum">Monatsübersicht anzeigen</button>
+  </div>
+  <div class="datebar"><button id="prev" aria-label="Vorheriger Tag">‹</button><h2 id="dtitle"></h2><button id="next" aria-label="Nächster Tag">›</button></div>
+  <div class="card ringcard">
+    <div class="ringwrap"><svg viewBox="0 0 120 120"><circle class="bg" cx="60" cy="60" r="52"/><circle class="fg" id="ring" cx="60" cy="60" r="52" stroke-dasharray="0 327" style="stroke:var(--caf)"/></svg>
+      <div class="rtxt"><b id="rCaf">0</b><span>von <em id="goalTxt" style="font-style:normal">400</em> mg</span><span id="rLeft" style="font-weight:700;margin-top:3px"></span></div></div>
+    <div class="stats" id="dayBig"></div>
+  </div>
+  <div class="card">
+    <h3 style="font-size:24px;margin-bottom:10px">Dose eintragen</h3>
+    <div class="seg" id="segB"><button class="m on" data-v="monster">Monster</button><button class="r" data-v="redbull">Red Bull</button></div>
+    <label for="tFl">Sorte</label><select id="tFl"></select>
+    <div class="seg" id="segZ" style="margin-top:10px"><button class="on" data-v="0">Mit Zucker</button><button data-v="1">Zero / ohne Zucker</button></div>
+    <p class="mini" id="zHint" style="margin:-4px 2px 6px"></p>
+    <div id="custBox" hidden>
+      <div id="scanRow">
+        <div class="scChips" id="scChips"></div>
+        <div class="grid2"><button class="btn2" id="scCam" style="margin-top:0">📷 Nährwerttabelle fotografieren</button><button class="btn2" id="scBar" style="margin-top:0">▮▯▮ Barcode scannen</button></div>
+        <div class="grid2"><button class="btn2" id="scPic" style="margin-top:8px">🖼 Bild wählen</button><button class="btn2" id="scPaste" style="margin-top:8px">📋 Text einfügen</button></div>
+        <button class="btn2" id="scNew" style="margin-top:8px" hidden>↺ Neue Dose</button>
+        <div class="scNext" id="scNext" aria-live="polite"></div>
+        <p class="mini" id="scMsg" style="margin:6px 2px 4px"></p>
+      </div>
+      <label for="cN">Name (optional)</label><input type="text" id="cN" maxlength="40" placeholder="z. B. Monster Ultra Gold">
+      <div class="grid2"><div><label for="cK">kcal pro Dose</label><input type="number" id="cK" inputmode="decimal" min="0" step="any" placeholder="10"></div><div><label for="cS">Zucker (g) pro Dose</label><input type="number" id="cS" inputmode="decimal" min="0" step="any" placeholder="0"></div></div>
+      <label for="cC">Koffein (mg) pro Dose</label><input type="number" id="cC" inputmode="decimal" min="0" step="any" placeholder="160">
+    </div>
+    <label for="tMl">Größe</label><select id="tMl"></select>
+    <div class="prev" id="tPrev" aria-live="polite"></div>
+    <button class="btn" id="tAdd">+ Getrunken</button>
+    <p class="note">Wird für den angezeigten Tag eingetragen. Nährwerte sind Richtwerte, bei Abweichung zählt die Dose. Stimmt bei einer Sorte etwas nicht, nimm „Eigene Dose“. Deine Auswahl wird gemerkt. 400 mg Koffein pro Tag gelten als Richtwert der EFSA für Erwachsene. Dein eigenes Tagesziel stellst du in den Einstellungen ein.</p>
+  </div>
+  <div id="tList"></div>
+  <div class="card"><h3 style="font-size:24px">Letzte 7 Tage</h3><div class="week" id="week"></div><div class="sum" id="sumBig"></div><p class="note" id="allLine"></p></div>
+</section>
+
+</main>
+<div class="toast" id="toast" hidden role="status"><span id="toastT"></span><button id="toastB"></button></div>
+<nav><div class="in">
+  <button class="on" data-t="deals"><svg viewBox="0 0 24 24"><path d="M3 12l9-9h8v8l-9 9z"/><circle cx="16" cy="8" r="1.5"/></svg>Angebote</button>
+  <button data-t="near"><svg viewBox="0 0 24 24"><path d="M12 21s7-6.2 7-11a7 7 0 10-14 0c0 4.8 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>In der Nähe</button>
+  <button data-t="track"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h7l-1 8 9-12h-7z"/></svg>Tracker</button>
+</div></nav>
+
+<div class="sheet" id="rvPop" hidden role="dialog" aria-modal="true" aria-labelledby="rvT">
+ <div class="panel">
+  <div class="ph"><h2 id="rvT">Monatsrückblick</h2><button class="x" id="rvX" aria-label="Schließen">✕</button></div>
+  <div class="card"><div id="rvBody"></div></div>
+  <button class="btn" id="rvOk">Schließen</button>
+ </div>
+</div>
+
+<div class="sheet" id="stPop" hidden role="dialog" aria-modal="true" aria-labelledby="stT">
+ <div class="panel">
+  <div class="ph"><h2 id="stT">Stand der Angebote</h2><button class="x" id="stX" aria-label="Schließen">✕</button></div>
+  <div class="card">
+   <h3>Zuletzt erzeugt</h3>
+   <p id="stFull" style="font:800 26px/1.15 'Barlow Condensed',sans-serif;margin:0 0 4px"></p>
+   <p class="mini" id="stSub"></p>
+   <button class="btn" id="stUpd">Jetzt aktualisieren</button>
+  </div>
+ </div>
+</div>
+
+<div class="sheet" id="pastePop" hidden role="dialog" aria-modal="true" aria-labelledby="pasteT">
+ <div class="panel">
+  <div class="ph"><h2 id="pasteT">Text einfügen</h2><button class="x" id="pasteX" aria-label="Schließen">✕</button></div>
+  <div class="card">
+   <h3>Mit Live-Text vom iPhone</h3>
+   <ol class="steps"><li>Öffne die <b>Kamera</b> und halte sie auf die Nährwerttabelle der Dose.</li><li>Tippe auf das <b>Live-Text-Symbol</b> (unten rechts, Rahmen mit Textzeilen), dann auf <b>Alle auswählen</b> und <b>Kopieren</b>.</li><li>Komm hierher zurück, füge den Text unten ein und tippe auf „Auswerten“.</li></ol>
+   <label for="pasteIn">Text</label>
+   <textarea id="pasteIn" placeholder="Hier den kopierten Text einfügen" spellcheck="false" autocapitalize="off"></textarea>
+   <button class="btn" id="pasteGo">Auswerten</button>
+  </div>
+ </div>
+</div>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="setT">
+ <div class="panel">
+  <div class="ph"><h2 id="setT">Einstellungen</h2><button class="x" id="setX" aria-label="Schließen">✕</button></div>
+  <div class="card">
+   <h3>Angebote</h3>
+   <p class="mini" id="updInfo"></p>
+   <button class="btn" id="updBtn">Jetzt aktualisieren</button>
+  </div>
+  <div class="card">
+   <h3>Benachrichtigungen</h3>
+   <div class="mini" id="ntInfo"></div>
+   <label for="ntTopic">Dein ntfy-Thema (geheimer Name)</label>
+   <input type="text" id="ntTopic" maxlength="64" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" placeholder="z. B. canradar-x7k2p9mq">
+   <div class="grid2"><button class="btn2" id="ntRnd" style="margin-top:8px">Zufälliges Thema</button><button class="btn2" id="ntCopy" style="margin-top:8px">Kopieren</button></div>
+   <button class="btn r" id="ntBtn">Test-Benachrichtigung senden</button>
+   <button class="btn2" id="ntSet">ntfy aus dem App Store laden</button>
+  </div>
+  <div class="card">
+   <h3>Tracker</h3>
+   <label for="goalIn">Koffein-Tagesziel (mg)</label>
+   <input type="number" id="goalIn" inputmode="numeric" min="50" max="1000" step="10" value="400">
+   <p class="mini" id="goalInfo"></p>
+   <button class="btn2" id="goalReset">Auf 400 mg zurücksetzen</button>
+  </div>
+  <div class="card">
+   <h3>Sicherung</h3>
+   <p class="mini">Deine Einträge liegen nur auf diesem Handy. Mit der Sicherung speicherst du sie oder nimmst sie auf ein anderes Handy mit.</p>
+   <div class="grid2"><button class="btn2" id="bkOut" style="margin-top:8px">Sicherung kopieren</button><button class="btn2" id="bkIn" style="margin-top:8px">Sicherung einfügen</button></div>
+   <div id="bkBox" hidden>
+    <label for="bkText">Sicherungstext</label>
+    <textarea id="bkText" spellcheck="false" autocapitalize="off"></textarea>
+    <button class="btn" id="bkGo" hidden>Jetzt wiederherstellen</button>
+   </div>
+   <p class="mini" id="bkMsg" style="margin:8px 2px 0"></p>
+  </div>
+  <div class="card">
+   <h3>Darstellung</h3>
+   <div class="seg s3" id="thSeg"><button data-v="auto">Automatisch</button><button data-v="light">Hell</button><button data-v="dark">Dunkel</button></div>
+   <label>Gedrückte Knöpfe</label>
+   <div class="seg" id="btSeg"><button data-v="white">Standard (hell)</button><button data-v="black">Schwarz</button></div>
+   <label>Hintergrund</label>
+   <div class="bgs" id="bgs"></div>
+  </div>
+  <p class="made">Made by Luca R the G</p>
+  <p class="mini" id="verLine" style="text-align:center;margin:4px 0 0"></p>
+  <span id="errLine" hidden></span>
+ </div>
+</div>
+
+<script>
+(function(){
+const BN={monster:'Monster Energy',redbull:'Red Bull'};
+const ST={
+ lidl:{n:'Lidl',bg:'#0050aa',fg:'#ffd500'},netto:{n:'Netto',bg:'#ffe500',fg:'#d4001a'},aldi:{n:'Aldi',bg:'#0a2a7a',fg:'#ffffff'},
+ edeka:{n:'Edeka',bg:'#ffe500',fg:'#00479d'},kaufland:{n:'Kaufland',bg:'#e10915',fg:'#ffffff'},penny:{n:'Penny',bg:'#cd1719',fg:'#ffffff'},rewe:{n:'REWE',bg:'#cc071e',fg:'#ffffff'}};
+let STAND='26.10.2026',STAND_ISO='2026-10-26',GEN='',LASTOK=0;
+let DEALS=[
+ {s:'netto',b:'monster',ml:500,n:1,price:.88,was:1.59,until:'2026-10-31'},
+ {s:'penny',b:'monster',ml:500,n:1,price:.99,was:1.59,until:'2026-10-31'},
+ {s:'kaufland',b:'redbull',ml:250,n:1,price:.88,was:1.49,until:'2026-10-31'},
+ {s:'aldi',b:'redbull',ml:250,n:1,price:.89,was:1.49,until:'2026-10-30',note:'Aldi Süd und Nord'},
+ {s:'penny',b:'redbull',ml:250,n:1,price:.99,was:1.49,until:'2026-10-31',note:'0,88 € mit Penny-App'},
+ {s:'lidl',b:'redbull',ml:250,n:6,price:4.99,was:7.49,until:'2026-10-31',note:'zzgl. Pfand'}];
+let EMPTY={edeka:'Edeka hat Red Bull diese Woche nur zum normalen Preis von 1,49 € im Prospekt. Ein Angebot mit Rabatt habe ich nicht gefunden.'};
+/* ===== Sorten: Werte pro 100 ml. Jede Sorte hat Variante mit Zucker (a) und/oder Zero (z) ===== */
+const V={monster:[],redbull:[]},GR={monster:[],redbull:[]};
+function addG(b,gid,gn,a,z){const g={id:gid,n:gn,a:null,z:null};
+ [['a',a],['z',z]].forEach(([k,x])=>{if(x){V[b].push({id:x[0],b:b,n:x[1],k:x[2],s:x[3],c:32});g[k]=x[0]}});GR[b].push(g)}
+/* Monster: Zero/Ultra = 2 kcal pro 100 ml (10 kcal pro 500 ml), alle 32 mg Koffein pro 100 ml (160 mg pro 500 ml) */
+addG('monster','mo','Monster Energy (Original)',['m1','Monster Energy',46,11],['m3','Monster Energy Zero Sugar',2,0]);
+addG('monster','mw','Ultra White',null,['m2','Monster Zero Ultra',2,0]);
+[['m4','Ultra Paradise'],['m5','Ultra Violet'],['m6','Ultra Blue'],['m7','Ultra Red'],['m8','Ultra Gold'],['m9','Ultra Fiesta Mango'],['m10','Ultra Peachy Keen'],['m11','Ultra Watermelon'],['m12','Ultra Rosa'],['m13','Ultra Strawberry Dreams']]
+ .forEach(x=>addG('monster',x[0],x[1],null,[x[0],'Monster '+x[1],2,0]));
+[['m20','Juiced Mango Loco'],['m21','Juiced Pipeline Punch'],['m22','Juiced Pacific Punch'],['m23','Juiced Bad Apple'],['m24','Juiced Khaotic']]
+ .forEach(x=>addG('monster',x[0],x[1],[x[0],'Monster '+x[1],48,11],null));
+/* Red Bull: 32 mg Koffein pro 100 ml */
+addG('redbull','ro','Red Bull Energy (Original)',['r1','Red Bull Energy',46,11],['r2','Red Bull Sugarfree',3,0]);
+addG('redbull','rz','Red Bull Zero',null,['r3','Red Bull Zero',2,0]);
+/* Editionen (mit Zucker): Werte wie Original, je nach Edition 45 bis 46 kcal und 11 g Zucker pro 100 ml. Fehlt eine Sorte oder weicht sie ab: "Eigene Dose". */
+[['r10','Rote Edition (Wassermelone)'],['r11','Blaue Edition (Blaubeere)'],['r12','Gelbe Edition (Tropical)'],['r13','Weiße Edition (Kokos-Blaubeere)'],
+ ['r14','Grüne Edition (Kaktusfrucht)'],['r15','Orange Edition (Tangerine)'],['r16','Lila Edition (Curuba-Holunder)'],['r17','Pfirsich-Nektarine'],
+ ['r18','Aprikose-Erdbeere'],['r19','Eisige Vanille-Beere'],['r20','Juneberry'],['r21','Feige-Apfel (Winter)'],['r22','Birne-Zimt (Winter)'],
+ ['r23','Dragon Fruit'],['r24','Pink Grapefruit'],['r25','Kirsche']]
+ .forEach(x=>addG('redbull',x[0],x[1],[x[0],'Red Bull '+x[1].split(' (')[0],46,11],null));
+/* Red Bull Sugarfree-Editionen */
+[['r30','Sugarfree Rote Edition (Wassermelone)'],['r31','Sugarfree Blaue Edition (Blaubeere)'],['r32','Sugarfree Gelbe Edition (Tropical)'],
+ ['r33','Sugarfree Weiße Edition (Kokos-Blaubeere)'],['r34','Sugarfree Grüne Edition (Kaktusfrucht)'],['r35','Sugarfree Lila Edition (Curuba-Holunder)'],
+ ['r36','Sugarfree Pfirsich-Nektarine'],['r37','Sugarfree Aprikose-Erdbeere'],['r38','Sugarfree Juneberry']]
+ .forEach(x=>addG('redbull',x[0],x[1],null,[x[0],'Red Bull '+x[1].split(' (')[0],3,0]));
+const SIZES={monster:[355,473,500],redbull:[200,250,355,473,591,1000]};
+const ALLV={};Object.keys(V).forEach(b=>V[b].forEach(v=>{v.b=b;ALLV[v.id]=v}));
+let LOG=[];
+try{const p=JSON.parse(localStorage.getItem('canradar1')||'null');if(p&&Array.isArray(p.log))LOG=p.log}catch(e){}
+let IDX=null,MEMO={};
+const save=()=>{IDX=null;MEMO={};try{localStorage.setItem('canradar1',JSON.stringify({log:LOG}))}catch(e){}};
+const byDate=()=>{if(IDX)return IDX;IDX={};for(const e of LOG){(IDX[e.date]||(IDX[e.date]=[])).push(e)}return IDX};
+const dayEs=d=>byDate()[d]||[];
+const PK='canradar_pick';
+let pick={b:'monster',f:{},z:{},ml:{},cust:{n:'',k:'',s:'',c:''}};
+try{const p=JSON.parse(localStorage.getItem(PK)||'null');if(p&&typeof p==='object'){if(p.b==='redbull')pick.b='redbull';
+ ['f','z','ml'].forEach(k=>{if(p[k]&&typeof p[k]==='object')pick[k]=p[k]});if(p.cust&&typeof p.cust==='object')Object.assign(pick.cust,p.cust)}}catch(e){}
+const savePick=()=>{try{localStorage.setItem(PK,JSON.stringify(pick))}catch(e){}};
+const $=i=>document.getElementById(i);
+const eur=n=>n.toFixed(2).replace('.',',')+' €';
+const iso=d=>{const m=d.getMonth()+1,x=d.getDate();return d.getFullYear()+'-'+(m<10?'0':'')+m+'-'+(x<10?'0':'')+x};
+let today=iso(new Date());
+let cur=today,VM=today.slice(0,7),tb=pick.b,fs='all',fb='all',gid=0,pos=null,wid=null,started=false;
+
+/* ===== Automatische Aktualisierung ===== */
+/* Die Adresse der deals.json steht an EINER Stelle: bridge.js (DATA_URL). */
+const CK='canradar_deals1',MAXAGE=45*1000,ISO_RE=/^\d{4}-\d{2}-\d{2}$/;
+let net='',lastTry=0,busy=false;
+const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmtStand=i=>i.split('-').reverse().join('.');
+const okDeal=d=>d&&ST[d.s]&&BN[d.b]&&+d.price>0&&+d.was>+d.price&&+d.ml>0&&+d.n>=1&&ISO_RE.test(d.until||'');
+function apply(j){
+ if(!j||!Array.isArray(j.deals)||!ISO_RE.test(j.stand||'')||j.stand<STAND_ISO)return false;
+ DEALS=j.deals.filter(okDeal).map(d=>({s:d.s,b:d.b,ml:(d.b==='monster'&&+d.ml===440)?500:+d.ml,n:+d.n,price:+d.price,was:+d.was,until:d.until,note:d.note?String(d.note):undefined}));
+ EMPTY=j.empty&&typeof j.empty==='object'?j.empty:{};
+ STAND_ISO=j.stand;STAND=fmtStand(j.stand);GEN=typeof j.generated==='string'?j.generated:'';return true}
+const hm=d=>d.toLocaleTimeString('de-DE',{hour:'2-digit',minute:'2-digit'});
+function genTime(){const d=GEN?new Date(GEN):null;if(!d||isNaN(d))return '';
+ const t=new Date(),same=d.toDateString()===t.toDateString();
+ return (same?'heute':d.toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'}))+' '+hm(d)}
+function pillTime(){const d=GEN?new Date(GEN):null;return d&&!isNaN(d)?hm(d):STAND.slice(0,6)}
+function fullStand(){const d=GEN?new Date(GEN):null;
+ if(!d||isNaN(d))return 'Stand '+STAND;
+ return d.toLocaleDateString('de-DE',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+', '+hm(d)+' Uhr'}
+/* Zu alt: GitHub hat seit über 75 Minuten nichts Neues erzeugt (Zeitplan dort kann sich verspäten) */
+const STALE=75*60000;
+function genAge(){const d=GEN?new Date(GEN):null;return d&&!isNaN(d)?Date.now()-d.getTime():0}
+const isStale=()=>genAge()>STALE;
+function ageTxt(ms){const m=Math.max(1,Math.round(ms/60000));return m<60?m+' Min.':Math.floor(m/60)+' Std '+(m%60)+' Min.'}
+function renderPop(){$('stFull').textContent=fullStand();
+ $('stSub').textContent=(LASTOK?'Zuletzt abgerufen: '+new Date(LASTOK).toLocaleDateString('de-DE',{day:'2-digit',month:'2-digit'})+', '+hm(new Date(LASTOK))+' Uhr':'Noch nicht abgerufen')+(net?' · '+net:'')+(!net&&isStale()?' · ⏳ Erzeugt vor '+ageTxt(genAge())+' – GitHub hat noch keinen neuen Stand gebaut, das liegt nicht an deinem Handy.':'')}
+function renderStand(){$('stand').textContent=(net&&net.indexOf('lädt')<0?'⚠ ':net?'↻ ':isStale()?'⏳ ':'')+pillTime();if(!$('stPop').hidden)renderPop()}
+function renderAll(){renderStand();renderDeals();renderNear()}
+function getRemote(){
+ return new Promise((res,rej)=>{
+  if(!window.CanRadarNative){rej(new Error('nur in der App'));return}
+  const to=setTimeout(()=>rej(new Error('Zeitüberschreitung')),25000);
+  window.__dealsCb=(ok,txt)=>{clearTimeout(to);if(!ok){rej(new Error(txt));return}try{res(JSON.parse(txt))}catch(e){rej(new Error('Datei defekt'))}};
+  window.CanRadarNative.fetchDeals()})}
+async function sync(force){
+ if(busy||!window.CanRadarNative)return;
+ if(!force&&Date.now()-lastTry<MAXAGE)return;
+ busy=true;lastTry=Date.now();net='lädt …';renderStand();
+ try{
+  const j=await getRemote();
+  if(!apply(j))throw new Error('Stand zu alt');
+  try{localStorage.setItem(CK,JSON.stringify(j))}catch(e){}
+  net='';LASTOK=Date.now();try{localStorage.setItem(CK+'t',String(LASTOK))}catch(e){}
+ }catch(e){net='Fehler: '+String(e&&e.message||e).slice(0,28)}
+ busy=false;renderAll()}
+try{const c=JSON.parse(localStorage.getItem(CK)||'null');if(c)apply(c)}catch(e){}
+try{LASTOK=+localStorage.getItem(CK+'t')||0}catch(e){}
+setInterval(()=>{if(!busy)renderStand()},60000);
+$('stand').onclick=()=>{$('stPop').hidden=false;renderPop();sync(false)};
+$('stX').onclick=()=>{$('stPop').hidden=true};
+$('stPop').addEventListener('click',e=>{if(e.target===$('stPop'))$('stPop').hidden=true});
+$('stUpd').onclick=async()=>{const b=$('stUpd');if(!window.CanRadarNative){$('stSub').textContent='Aktualisieren geht nur in der App.';return}
+ if(busy)return;b.disabled=true;b.textContent='Lädt …';await sync(true);b.disabled=false;b.textContent='Jetzt aktualisieren';renderPop()};
+renderStand();
+
+/* ===== Einstellungen: Hell/Dunkel, Hintergründe, Aktualisieren, Test-Meldung ===== */
+const UK='canradar_ui';
+const PRESETS=[
+ {id:'nacht',n:'Nacht',
+  d:{bg2:'#0d1020',bg:'#0d1020',sf:'#171b33',sf2:'#222849',ga:'rgba(91,134,255,.28)',gb:'rgba(125,255,58,.14)'},
+  l:{bg2:'#eef0fa',bg:'#eef0fa',sf:'#ffffff',sf2:'#e3e7f6',ga:'rgba(91,134,255,.28)',gb:'rgba(125,255,58,.14)'}},
+ {id:'neon',n:'Neon',
+  d:{bg2:'#1f0b3a',bg:'#0b0618',sf:'#241243',sf2:'#37195f',ga:'rgba(255,60,200,.32)',gb:'rgba(0,229,255,.22)'},
+  l:{bg2:'#fbe6ff',bg:'#e9f5ff',sf:'#ffffff',sf2:'#f1dcff',ga:'rgba(255,60,200,.24)',gb:'rgba(0,200,255,.24)'}},
+ {id:'sonne',n:'Sonnenuntergang',
+  d:{bg2:'#3d1233',bg:'#170a1f',sf:'#2a1330',sf2:'#40203f',ga:'rgba(255,140,50,.34)',gb:'rgba(255,70,120,.24)'},
+  l:{bg2:'#ffe2cf',bg:'#fff4ec',sf:'#ffffff',sf2:'#ffe6d9',ga:'rgba(255,140,50,.32)',gb:'rgba(255,90,130,.22)'}},
+ {id:'ozean',n:'Ozean',
+  d:{bg2:'#0c3050',bg:'#06121f',sf:'#0f2740',sf2:'#17395a',ga:'rgba(0,180,255,.32)',gb:'rgba(0,255,200,.16)'},
+  l:{bg2:'#d8f0ff',bg:'#f0f9ff',sf:'#ffffff',sf2:'#d9edf9',ga:'rgba(0,160,255,.28)',gb:'rgba(0,220,190,.22)'}},
+ {id:'wald',n:'Wald',
+  d:{bg2:'#12301d',bg:'#07140c',sf:'#112a1b',sf2:'#1a3e29',ga:'rgba(125,255,58,.24)',gb:'rgba(0,200,120,.20)'},
+  l:{bg2:'#dff4da',bg:'#f2faef',sf:'#ffffff',sf2:'#dcefd7',ga:'rgba(90,200,40,.30)',gb:'rgba(0,170,110,.20)'}},
+ {id:'lava',n:'Lava',
+  d:{bg2:'#341010',bg:'#130606',sf:'#2a1212',sf2:'#401b1b',ga:'rgba(255,70,40,.34)',gb:'rgba(255,180,0,.20)'},
+  l:{bg2:'#ffe0d8',bg:'#fff2ee',sf:'#ffffff',sf2:'#ffe3dc',ga:'rgba(255,80,40,.26)',gb:'rgba(255,170,0,.24)'}},
+ {id:'schlicht',n:'Schlicht',
+  d:{bg2:'#101014',bg:'#101014',sf:'#1b1b21',sf2:'#2a2a33',ga:'rgba(0,0,0,0)',gb:'rgba(0,0,0,0)'},
+  l:{bg2:'#f4f4f7',bg:'#f4f4f7',sf:'#ffffff',sf2:'#e6e6ee',ga:'rgba(0,0,0,0)',gb:'rgba(0,0,0,0)'}},
+ {id:'schwarz',n:'Schwarz',
+  d:{bg2:'#000000',bg:'#000000',sf:'#14141a',sf2:'#23232c',ga:'rgba(0,0,0,0)',gb:'rgba(0,0,0,0)'},
+  l:{bg2:'#ffffff',bg:'#ffffff',sf:'#f2f3fa',sf2:'#e3e6f2',ga:'rgba(0,0,0,0)',gb:'rgba(0,0,0,0)'}}
+];
+let UI={theme:'auto',bg:'nacht',goal:400,btn:'white'};
+const goalOk=g=>Number.isFinite(g)&&g>=50&&g<=1000;
+try{const u=JSON.parse(localStorage.getItem(UK)||'null');if(u&&typeof u==='object'){UI.theme=['auto','light','dark'].indexOf(u.theme)>-1?u.theme:'auto';UI.bg=PRESETS.some(p=>p.id===u.bg)?u.bg:'nacht';if(goalOk(+u.goal))UI.goal=Math.round(+u.goal);if(u.btn==='black')UI.btn='black'}}catch(e){}
+const mq=window.matchMedia?window.matchMedia('(prefers-color-scheme: light)'):null;
+const modeNow=()=>UI.theme==='auto'?(mq&&mq.matches?'light':'dark'):UI.theme;
+const saveUI=()=>{try{localStorage.setItem(UK,JSON.stringify(UI))}catch(e){}};
+function applyUI(){
+ const r=document.documentElement;
+ if(UI.theme==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',UI.theme);
+ if(UI.btn==='black')r.setAttribute('data-btn','black');else r.removeAttribute('data-btn');
+ const p=PRESETS.find(x=>x.id===UI.bg)||PRESETS[0],c=modeNow()==='light'?p.l:p.d;
+ ['bg','bg2','sf','sf2','ga','gb'].forEach(k=>r.style.setProperty('--'+k,c[k]));
+ try{if(window.CanRadarNative&&window.CanRadarNative.setBars)window.CanRadarNative.setBars(c.bg2,c.bg,modeNow()==='light')}catch(e){}}
+function renderTheme(){
+ document.querySelectorAll('#thSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===UI.theme));
+ document.querySelectorAll('#btSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===UI.btn));
+ const m=modeNow()==='light'?'l':'d';
+ $('bgs').innerHTML=PRESETS.map(p=>{const c=p[m];
+  return `<button class="sw${p.id===UI.bg?' on':''}" data-id="${p.id}" aria-label="Hintergrund ${p.n}" aria-pressed="${p.id===UI.bg}"><i style="background:radial-gradient(60px 40px at 100% 0,${c.ga},transparent 70%),radial-gradient(60px 40px at 0 10%,${c.gb},transparent 70%),linear-gradient(180deg,${c.bg2},${c.bg})"></i>${p.n}</button>`}).join('')}
+$('thSeg').onclick=e=>{const b=e.target.closest&&e.target.closest('button');if(!b||!b.dataset.v)return;UI.theme=b.dataset.v;saveUI();applyUI();renderTheme()};
+$('btSeg').onclick=e=>{const b=e.target.closest&&e.target.closest('button');if(!b||!b.dataset.v)return;UI.btn=b.dataset.v;saveUI();applyUI();renderTheme()};
+$('bgs').onclick=e=>{const b=e.target.closest&&e.target.closest('.sw');if(!b)return;UI.bg=b.dataset.id;saveUI();applyUI();renderTheme()};
+if(mq&&mq.addEventListener)mq.addEventListener('change',()=>{if(UI.theme==='auto'){applyUI();renderTheme()}});
+applyUI();
+
+const sheet=$('sheet');
+function renderUpd(msg){const g=genTime(),ok=LASTOK?' · abgerufen um '+hm(new Date(LASTOK))+' Uhr':'';
+ $('updInfo').textContent=msg||('Stand '+STAND+(g?', '+g+' Uhr':'')+ok+' · '+active().length+' Angebote aktiv'+(net&&net.indexOf('lädt')<0?' · '+net:'')+(!net&&isStale()?' · ⏳ erzeugt vor '+ageTxt(genAge())+', GitHub hat noch nichts Neues gebaut':''))}
+function renderNt(msg){
+ const N=window.CanRadarNative;
+ if(!N||!N.ntfyGet){$('ntInfo').textContent='Nur in der App verfügbar.';$('ntBtn').disabled=true;return}
+ const t=N.ntfyGet();
+ if(document.activeElement!==$('ntTopic'))$('ntTopic').value=t;
+ $('ntInfo').innerHTML=msg?esc(msg):(N.ntfyValid(t)
+  ?'Eingerichtet. Neue Monster- und Red-Bull-Angebote kommen als Meldung über die kostenlose App „ntfy“. Tippe unten für eine Test-Meldung.'
+  :'Auf dem iPhone kommen die Meldungen über die kostenlose App „ntfy“. So richtest du sie ein:<ol class="steps"><li>Unten „ntfy aus dem App Store laden“ tippen und die App installieren.</li><li>Hier „Zufälliges Thema“ und dann „Kopieren“ tippen.</li><li>In ntfy auf „+“ tippen, das Thema einfügen und „Abonnieren“ tippen.</li><li>Hier „Test-Benachrichtigung senden“ tippen.</li><li>Damit auch echte Angebote ankommen, braucht GitHub dasselbe Thema (steht in der Anleitung).</li></ol>')}
+function openSet(){sheet.hidden=false;$('goalIn').value=UI.goal;renderGoalInfo();renderUpd();renderNt();renderTheme();renderErr();$('setX').focus()}
+function closeSet(){sheet.hidden=true;$('gear').focus()}
+function renderGoalInfo(){$('goalInfo').textContent='Aktuell '+UI.goal+' mg pro Tag. Der Ring wird gelb ab '+Math.round(UI.goal*.7)+' mg und rot über '+UI.goal+' mg.'}
+$('goalIn').oninput=()=>{const g=Math.round(parseFloat($('goalIn').value));if(!goalOk(g))return;UI.goal=g;saveUI();renderGoalInfo();renderTrack()};
+$('goalIn').onchange=()=>{$('goalIn').value=UI.goal};
+$('goalReset').onclick=()=>{UI.goal=400;saveUI();$('goalIn').value=400;renderGoalInfo();renderTrack()};
+$('gear').onclick=openSet;
+$('setX').onclick=closeSet;
+sheet.addEventListener('click',e=>{if(e.target===sheet)closeSet()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!sheet.hidden)closeSet()});
+window.__back=()=>{if(!$('rvPop').hidden){closeReview();return true}if(!$('stPop').hidden){$('stPop').hidden=true;return true}if(!sheet.hidden){closeSet();return true}return false};
+
+$('updBtn').onclick=async()=>{
+ const b=$('updBtn');
+ if(!window.CanRadarNative){renderUpd('Aktualisieren geht nur in der App.');return}
+ if(busy)return;
+ b.disabled=true;b.textContent='Lädt …';
+ await sync(true);
+ b.disabled=false;b.textContent='Jetzt aktualisieren';
+ renderUpd(net===''?'✓ Aktualisiert um '+hm(new Date())+' Uhr. Stand '+STAND+(genTime()?', '+genTime()+' Uhr':'')+' · '+active().length+' Angebote aktiv.':'✗ '+net)};
+
+$('ntTopic').oninput=()=>{const N=window.CanRadarNative,v=$('ntTopic').value.trim();if(N&&N.ntfySet&&(!v||N.ntfyValid(v)))N.ntfySet(v)};
+$('ntTopic').onchange=()=>renderNt();
+$('ntRnd').onclick=()=>{const N=window.CanRadarNative;if(!N||!N.ntfyRandom)return;const t=N.ntfyRandom();N.ntfySet(t);$('ntTopic').value=t;renderNt('Neues Thema: '+t+'. Bitte kopieren und in ntfy sowie bei GitHub eintragen.')};
+$('ntCopy').onclick=async()=>{const t=$('ntTopic').value.trim();if(!t)return;
+ try{await navigator.clipboard.writeText(t);renderNt('✓ Kopiert: '+t)}
+ catch(e){$('ntTopic').focus();$('ntTopic').select();try{$('ntTopic').setSelectionRange(0,t.length)}catch(_){}renderNt('Markiert. Jetzt lange tippen und „Kopieren“ wählen.')}};
+$('ntBtn').onclick=async()=>{
+ const N=window.CanRadarNative;if(!N||!N.ntfyTest)return;
+ const v=$('ntTopic').value.trim();
+ if(!N.ntfyValid(v)){renderNt('Bitte zuerst ein Thema eintragen (8 bis 64 Zeichen, nur Buchstaben, Zahlen, - und _). Am einfachsten: „Zufälliges Thema“.');return}
+ N.ntfySet(v);
+ const b=$('ntBtn');b.disabled=true;b.textContent='Sendet …';
+ const r=await N.ntfyTest();
+ b.disabled=false;b.textContent='Test-Benachrichtigung senden';
+ renderNt(r.ok?'✓ Test-Meldung gesendet. Sie sollte gleich in der ntfy-App ankommen (das Thema muss dort abonniert sein).':'✗ '+r.msg)};
+$('ntSet').onclick=()=>{const N=window.CanRadarNative;if(N&&N.openNtfyStore)N.openNtfyStore()};
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&!sheet.hidden){renderUpd();renderNt()}});
+
+/* Dosen-Grafik */
+function can(b){const i='g'+(++gid);
+ if(b==='monster')return `<svg viewBox="0 0 60 100" aria-hidden="true"><defs><linearGradient id="${i}a" x1="0" x2="1"><stop offset="0" stop-color="#050505"/><stop offset=".45" stop-color="#303030"/><stop offset="1" stop-color="#050505"/></linearGradient><linearGradient id="${i}b" x1="0" x2="1"><stop offset="0" stop-color="#868b94"/><stop offset=".5" stop-color="#eef0f4"/><stop offset="1" stop-color="#868b94"/></linearGradient></defs><rect x="11" y="6" width="38" height="90" rx="10" fill="url(#${i}a)"/><rect x="13" y="2" width="34" height="12" rx="5" fill="url(#${i}b)"/><rect x="13" y="88" width="34" height="9" rx="4" fill="url(#${i}b)"/><path d="M20 28h6l-3 44h-7zM31 22h7l-2 54h-8zM42 28h6l-5 46h-7z" fill="#7dff3a"/><rect x="15" y="15" width="4" height="72" rx="2" fill="#fff" opacity=".14"/></svg>`;
+ return `<svg viewBox="0 0 60 100" aria-hidden="true"><defs><linearGradient id="${i}a" x1="0" x2="1"><stop offset="0" stop-color="#9aa3b1"/><stop offset=".5" stop-color="#f1f3f7"/><stop offset="1" stop-color="#9aa3b1"/></linearGradient><linearGradient id="${i}b" x1="0" x2="1"><stop offset="0" stop-color="#14297a"/><stop offset=".5" stop-color="#3153c9"/><stop offset="1" stop-color="#14297a"/></linearGradient><clipPath id="${i}c"><rect x="11" y="6" width="38" height="90" rx="10"/></clipPath></defs><g clip-path="url(#${i}c)"><rect x="11" y="6" width="38" height="90" fill="url(#${i}a)"/><polygon points="11,60 49,44 49,96 11,96" fill="url(#${i}b)"/></g><circle cx="30" cy="52" r="10" fill="#ffd23f"/><circle cx="30" cy="52" r="10" fill="none" stroke="#e5283d" stroke-width="3"/><rect x="13" y="2" width="34" height="12" rx="5" fill="url(#${i}a)"/></svg>`}
+
+/* Karten-Hilfen */
+const lit=d=>d.price/(d.n*d.ml/1000);
+const pct=d=>Math.round((d.was-d.price)/d.was*100);
+const dleft=d=>Math.max(1,Math.ceil((new Date(d.until+'T23:59:59')-new Date())/864e5));
+const dtxt=d=>dleft(d)<=1?'nur noch heute':'noch '+dleft(d)+' Tage';
+const pk=d=>(d.n>1?d.n+' × ':'')+d.ml+' ml';
+const bis=d=>d.until.split('-').reverse().slice(0,2).join('.')+'.';
+const sv=s=>`--sb:${ST[s].bg};--sf0:${ST[s].fg}`;
+const mapsUrl=q=>pos?`https://www.google.com/maps/search/${encodeURIComponent(q)}/@${pos.lat},${pos.lng},15z`:`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q+' in der Nähe')}`;
+const active=()=>DEALS.filter(d=>d.until>=today);
+
+/* Angebote */
+function chipRow(el,items,cur,fn){
+ $(el).innerHTML=items.map(x=>`<button class="chip${cur===x[0]?' on':''}" data-v="${x[0]}">${x[2]?`<i style="--c:${x[2]}"></i>`:''}${x[1]}</button>`).join('');
+ $(el).querySelectorAll('button').forEach(b=>b.onclick=()=>fn(b.dataset.v));
+}
+function renderDeals(){
+ chipRow('fs',[['all','Alle Läden']].concat(Object.keys(ST).map(k=>[k,ST[k].n,ST[k].bg])),fs,v=>{fs=v;renderDeals()});
+ chipRow('fb',[['all','Alle Marken'],['monster','Monster','#7dff3a'],['redbull','Red Bull','#5b86ff']],fb,v=>{fb=v;renderDeals()});
+ const list=active().filter(d=>(fs==='all'||d.s===fs)&&(fb==='all'||d.b===fb)).sort((a,b)=>pct(b)-pct(a)||lit(a)-lit(b));
+ if(!list.length){
+  $('hero').innerHTML='';
+  $('dlist').innerHTML=`<div class="card empty"><b>Hier gibt es gerade nichts.</b><br>${fs!=='all'&&EMPTY[fs]&&fb==='all'?esc(EMPTY[fs]):'Für diese Auswahl habe ich diese Woche kein Angebot gefunden.'}</div>`;return}
+ const h=list[0],hc=h.b==='monster'?['#0b2a08','#2f9d14']:['#14246b','#3b5bdb'];
+ $('hero').innerHTML=`<div class="hero" style="--h1:${hc[0]};--h2:${hc[1]}"><small>Bestes Angebot${fs==='all'?'':' bei '+ST[fs].n}</small><div class="big">−${pct(h)} %</div><div class="t">${BN[h.b]} ${pk(h)} bei <span class="sp" style="${sv(h.s)}">${ST[h.s].n}</span><br><em>${eur(h.price)}</em> statt ${eur(h.was)}</div>${can(h.b)}</div>`;
+ $('dlist').innerHTML=list.map(d=>`<article class="deal" style="${sv(d.s)}"><div class="can">${can(d.b)}</div>
+  <div><span class="sp">${ST[d.s].n}</span><span class="pn">${BN[d.b]} ${pk(d)}</span><div class="mini">${eur(lit(d))}/L · spare ${eur(d.was-d.price)}${d.note?' · '+esc(d.note):''}</div></div>
+  <div class="pr"><b>${eur(d.price)}</b><s>${eur(d.was)}</s><em>−${pct(d)} %</em></div>
+  <div class="left" style="grid-column:1/-1"><span style="width:${Math.min(100,dleft(d)/6*100)}%"></span></div>
+  <div class="rt"><span>${dtxt(d)} · bis ${bis(d)}</span><a href="${mapsUrl(ST[d.s].n)}" target="_blank" rel="noopener">Route in Maps</a></div></article>`).join('')+
+  `<p class="note">Aus Online-Prospekten und Angebotsportalen (KaufDA, MeinProspekt, Prospektangebote u. a.), Stand ${STAND}. Der Streichpreis ist die UVP aus dem Prospekt, bei Kaufland, Aldi und Penny nach dem Vergleichspreis von 1,49 € je Dose. Automatisch erfasst, ohne Gewähr. Nicht jede Filiale führt jedes Angebot.</p>`;
+}
+
+/* In der Nähe */
+function renderNear(){
+ const g={};active().forEach(d=>{(g[d.s]=g[d.s]||[]).push(d)});
+ const k=Object.keys(g).sort((a,b)=>Math.max(...g[b].map(pct))-Math.max(...g[a].map(pct)));
+ if(!k.length){$('nearList').innerHTML='<div class="card empty"><b>Keine gültigen Angebote.</b><br>Die Liste aktualisiert sich automatisch, sobald neue Prospekte da sind.</div>';return}
+ $('nearList').innerHTML=k.map(s=>`<div class="shop" style="${sv(s)}"><div class="sh"><span>${ST[s].n}</span><em>bis −${Math.max(...g[s].map(pct))} %</em></div>${
+  g[s].map(d=>`<div class="ln">${can(d.b)}<span>${BN[d.b]} ${pk(d)}<br><span class="mini">spare ${eur(d.was-d.price)} · ${dtxt(d)}</span></span><b>${eur(d.price)}</b></div>`).join('')}
+  <a class="go" href="${mapsUrl(ST[s].n)}" target="_blank" rel="noopener">Nächste Filiale in Maps</a></div>`).join('');
+}
+function locOk(p){pos={lat:p.coords.latitude.toFixed(5),lng:p.coords.longitude.toFixed(5)};$('loc').classList.add('ok');$('locTxt').textContent='Standort aktiv. Maps öffnet sich genau bei dir.';renderNear();renderDeals()}
+function locErr(){pos=null;$('loc').classList.remove('ok');$('locTxt').textContent='Kein Standort. Erlaube ihn beim Nachfragen oder in den iPhone-Einstellungen (Datenschutz, Ortungsdienste), sonst sucht Maps nur grob in deiner Nähe.';renderNear()}
+function locate(){if(!navigator.geolocation){locErr();return}if(wid!==null)navigator.geolocation.clearWatch(wid);$('locTxt').textContent='Standort wird abgefragt …';try{wid=navigator.geolocation.watchPosition(locOk,locErr,{enableHighAccuracy:true,timeout:15000,maximumAge:30000})}catch(e){locErr()}}
+$('locBtn').onclick=locate;
+
+/* Tabs */
+function tab(t){document.querySelectorAll('section').forEach(s=>s.classList.toggle('on',s.id===t));
+ document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('on',b.dataset.t===t));window.scrollTo(0,0);
+ if(t==='near'&&!started){started=true;locate()}
+ try{history.replaceState(null,'','#'+t)}catch(e){}}
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>tab(b.dataset.t));
+const h0=(location.hash||'').slice(1);if(h0==='near'||h0==='track')tab(h0);
+
+/* Tracker */
+function seg(id,fn){$(id).querySelectorAll('button').forEach(b=>b.onclick=()=>{fn(b.dataset.v)})}
+const num=x=>parseFloat(String(x==null?'':x).replace(',','.'));
+const isX=()=>pick.f[tb]==='x';
+const curG=()=>GR[tb].find(g=>g.id===pick.f[tb])||GR[tb][0];
+const zNow=g=>g.a&&g.z?!!pick.z[g.id]:!g.a;
+const selV=()=>{const g=curG();return ALLV[zNow(g)?g.z:g.a]};
+const vOf=e=>e.vid==='x'?(e.v?{n:e.nm||'Eigene Dose',b:e.b==='redbull'?'redbull':'monster',k:+e.v.k||0,s:+e.v.s||0,c:+e.v.c||0}:null):ALLV[e.vid];
+const calc=e=>{const v=vOf(e);if(!v)return{k:0,s:0,c:0};const f=e.ml/100;return{k:v.k*f,s:v.s*f,c:v.c*f}};
+const sum=es=>{const t={n:es.length,k:0,s:0,c:0};es.forEach(e=>{const x=calc(e);t.k+=x.k;t.s+=x.s;t.c+=x.c});return t};
+function fillTrack(){
+ const x=isX(),g=curG();
+ $('segB').querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.v===tb));
+ $('tFl').innerHTML=GR[tb].map(q=>`<option value="${q.id}">${esc(q.n)}${q.a&&q.z?' · auch Zero':!q.a&&!/Zero/.test(q.n)?' · Zero':''}</option>`).join('')+'<option value="x">✏️ Eigene Dose …</option>';
+ $('tFl').value=x?'x':g.id;
+ $('segZ').hidden=x;$('custBox').hidden=!x;
+ if(x){$('zHint').textContent='Werte so eintragen, wie sie pro Dose auf der Packung stehen.';
+  $('cN').value=pick.cust.n||'';$('cK').value=pick.cust.k||'';$('cS').value=pick.cust.s||'';$('cC').value=pick.cust.c||''}
+ else{const zn=zNow(g),bs=$('segZ').querySelectorAll('button');
+  bs[0].disabled=!g.a;bs[1].disabled=!g.z;bs[0].classList.toggle('on',!zn);bs[1].classList.toggle('on',zn);
+  $('zHint').textContent=g.a&&g.z?'':(g.a?'Diese Sorte gibt es nur mit Zucker.':'Diese Sorte gibt es nur ohne Zucker (Zero).')}
+ $('tMl').innerHTML=SIZES[tb].map(m=>`<option value="${m}">${m} ml</option>`).join('');
+ $('tMl').value=SIZES[tb].indexOf(+pick.ml[tb])>-1?+pick.ml[tb]:(tb==='monster'?500:250);
+ $('tAdd').className='btn'+(tb==='redbull'?' r':'');
+ renderPrev()}
+function draft(){
+ const ml=parseInt($('tMl').value,10);if(!(ml>0))return null;
+ if(isX()){const c=pick.cust,f=100/ml,k=num(c.k||0),s=num(c.s||0),cf=num(c.c||0);
+  if([k,s,cf].some(v=>!isFinite(v)||v<0||v>5000))return null;
+  return{ml,x:true,nm:String(c.n||'').trim().slice(0,40)||'Eigene Dose',v:{k:k*f,s:s*f,c:cf*f}}}
+ const v=selV();return v?{ml,vid:v.id}:null}
+function renderPrev(){
+ const d=draft(),el=$('tPrev'),btn=$('tAdd');
+ if(!d){el.className='prev';el.textContent='Bitte gültige Zahlen eintragen.';btn.disabled=true;return}
+ btn.disabled=false;
+ const x=calc(d.x?{vid:'x',ml:d.ml,nm:d.nm,b:tb,v:d.v}:{vid:d.vid,ml:d.ml}),after=sum(dayEs(cur)).c+x.c,over=after>UI.goal;
+ el.className='prev'+(over?' warn':'');
+ el.innerHTML='<b>'+d.ml+' ml</b> · '+Math.round(x.k)+' kcal · '+de1(x.s)+' g Zucker · '+Math.round(x.c)+' mg Koffein'
+  +'<small>'+(over?'⚠ Damit lägst du bei '+Math.round(after)+' mg und über deinem Ziel von '+UI.goal+' mg.':'Danach heute: '+Math.round(after)+' von '+UI.goal+' mg Koffein.')+'</small>'}
+function mkEntry(d,date){const e={id:'e'+Date.now()+Math.random().toString(36).slice(2,6),ts:Date.now(),date:date,ml:d.ml};
+ if(d.x){e.vid='x';e.b=tb;e.nm=d.nm;e.v=d.v}else e.vid=d.vid;return e}
+let tt=0,tAct=null;
+function toast(msg,lbl,fn){$('toastT').textContent=msg;const b=$('toastB');b.textContent=lbl||'';b.hidden=!fn;tAct=fn||null;$('toast').hidden=false;clearTimeout(tt);
+ tt=setTimeout(()=>{$('toast').hidden=true;tAct=null},5000)}
+$('toastB').onclick=()=>{const f=tAct;tAct=null;$('toast').hidden=true;clearTimeout(tt);if(f)f()};
+seg('segB',v=>{if(v===tb)return;tb=pick.b=v;savePick();fillTrack()});
+$('tFl').onchange=()=>{pick.f[tb]=$('tFl').value;savePick();fillTrack()};
+seg('segZ',v=>{if(isX())return;const g=curG();if(!(g.a&&g.z))return;pick.z[g.id]=v==='1';savePick();fillTrack()});
+$('tMl').onchange=()=>{pick.ml[tb]=+$('tMl').value;savePick();renderPrev()};
+[['cN','n'],['cK','k'],['cS','s'],['cC','c']].forEach(([id,k])=>{$(id).oninput=()=>{pick.cust[k]=$(id).value;savePick();renderPrev()}});
+
+/* ===== Dosen scannen: Nährwerttabelle fotografieren + Barcode scannen, mit Anleitung ===== */
+const SCAN_SIZES=[200,250,275,330,355,440,473,500];
+const CAFW=/[kc][oa]ff?[eil1]{1,2}n/i;
+function scNorm(t){return String(t||'').replace(/\r/g,'').replace(/(\d),(\d)/g,'$1.$2').replace(/[ \t ]+/g,' ')
+ .replace(/kc[a4][l1I|]/ig,'kcal').replace(/(\d)\s*m[1I|](?![a-z])/g,'$1 ml')}
+function scFirst(T,re,n){const o=[];let m;re.lastIndex=0;while((m=re.exec(T))&&o.length<n)o.push(m[1]?0:+m[2]);return o}
+/* Eine Textquelle auswerten. Werte pro 100 ml (steht in Tabellen vor "pro Dose", deshalb jeweils der kleinere der ersten zwei). */
+function parseLabel(raw){
+ const T=scNorm(raw),o={};let m;
+ const kc=scFirst(T,/(<\s*)?(\d+(?:\.\d+)?)\s*kcal/ig,2);if(kc.length)o.k=Math.min.apply(null,kc);
+ else{const kj=scFirst(T,/(<\s*)?(\d+(?:\.\d+)?)\s*kj\b/ig,2);if(kj.length)o.k=Math.round(Math.min.apply(null,kj)/4.184)}
+ const zu=scFirst(T,/(?:zucker\w*|sugars?)[^\d<]{0,25}(<\s*)?(\d+(?:\.\d+)?)\s*g\b/ig,2);if(zu.length)o.s=Math.min.apply(null,zu);
+ /* Koffein: "xx mg/100 ml" mit dem Wort Koffein in der Nähe */
+ const rc=/(\d+(?:\.\d+)?)\s*mg\s*(?:\/|pro|per|je|in)?\s*100\s*ml/ig;let q;
+ while((q=rc.exec(T))){const ctx=T.slice(Math.max(0,q.index-50),q.index+q[0].length+25);if(CAFW.test(ctx)){o.c=+q[1];break}}
+ if(o.c==null){
+  m=new RegExp(CAFW.source+'\\w*[^\\d]{0,40}(\\d+(?:\\.\\d+)?)\\s*mg','i').exec(T)||new RegExp('(\\d+(?:\\.\\d+)?)\\s*mg\\s*(?:\\w+\\s){0,2}'+CAFW.source,'i').exec(T);
+  if(m)o.cRaw=+m[1]}
+ /* Dosengröße: erst bei "Inhalt/Füllmenge/e", dann irgendwo */
+ m=/(?:inhalt|füllmenge|fullmenge|volumen|contents?|net\s*vol\w*|\be)\W{0,8}(\d{3})\s*ml/i.exec(T);
+ if(m&&+m[1]>=150&&+m[1]<=1000)o.ml=+m[1];
+ if(!o.ml){const rs=/(\d{3})\s*ml/ig;while((m=rs.exec(T))){if(SCAN_SIZES.indexOf(+m[1])>-1){o.ml=+m[1];break}}}
+ if(!o.ml){const rl=/(\d?\.\d+)\s*l\b/ig;while((m=rl.exec(T))){const v=Math.round(+m[1]*1000);if(SCAN_SIZES.indexOf(v)>-1){o.ml=v;break}}}
+ return o}
+/* Zeilen-Text (Tabellenzeilen) zuerst, der rohe Text füllt nur Lücken */
+function parseBoth(rows,text){const a=parseLabel(rows),b=parseLabel(text);['k','s','c','cRaw','ml'].forEach(k=>{if(a[k]==null&&b[k]!=null)a[k]=b[k]});return a}
+async function offLookup(ean){
+ const ac=new AbortController(),to=setTimeout(()=>ac.abort(),9000);
+ try{const r=await fetch('https://world.openfoodfacts.org/api/v2/product/'+encodeURIComponent(ean)+'.json?fields=product_name,brands,quantity,product_quantity,nutriments',{signal:ac.signal});
+  const j=await r.json();if(!j||j.status!==1||!j.product)return{found:false};
+  const P=j.product,n=P.nutriments||{},p1=(...ks)=>{for(const k of ks){if(n[k]!=null&&n[k]!==''&&isFinite(+n[k]))return +n[k]}return null};
+  let k=p1('energy-kcal_100ml','energy-kcal_100g');
+  if(k==null){const kj=p1('energy-kj_100ml','energy-kj_100g','energy_100ml','energy_100g');if(kj!=null)k=Math.round(kj/4.184)}
+  const s=p1('sugars_100ml','sugars_100g'),cg=p1('caffeine_100ml','caffeine_100g');
+  let c=cg==null?null:cg*1000,est=false;
+  const nm=String(P.product_name||'').slice(0,40),id=nm+' '+String(P.brands||'');
+  if((c==null||c<=0)&&/monster|red\s?bull/i.test(id)){c=32;est=true}
+  let ml=null;const pq=+P.product_quantity;if(pq>=150&&pq<=1000&&/m?l\b/i.test(String(P.quantity||'')))ml=Math.round(pq);
+  return{found:true,name:nm,k,s,c,ml,est}
+ }finally{clearTimeout(to)}}
+let scTimer=0;
+const scMsg=t=>{$('scMsg').textContent=t};
+function scBusy(b){['scCam','scBar','scPic'].forEach(i=>$(i).disabled=b);clearTimeout(scTimer);if(b)scTimer=setTimeout(()=>{scBusy(false);scMsg('Das dauert zu lange. Bitte noch einmal versuchen oder von Hand eintragen.')},150000)}
+const r1=x=>String(Math.round(x*10)/10);
+window.__scanProg=t=>{scBusy(true);scMsg(t)};
+/* Sammelstand über mehrere Scans (Werte pro 100 ml). Tabelle (T) geht vor Barcode (B). */
+const SC={k:null,s:null,c:null,cRaw:null,ml:null,name:'',code:'',from:{},note:[],tab:0,bar:0,off:''};
+function scReset(){Object.assign(SC,{k:null,s:null,c:null,cRaw:null,ml:null,name:'',code:'',from:{},note:[],tab:0,bar:0,off:''});scRender()}
+function scMerge(p,src){['k','s','c','ml','cRaw'].forEach(f=>{if(p[f]==null)return;
+ if(SC[f]==null||src==='T'||SC.from[f]!=='T'){SC[f]=p[f];SC.from[f]=src}})}
+const SC_RANGE={k:[0,100],s:[0,25],c:[0,60]};
+function scFinal(){const ml=parseInt($('tMl').value,10)||(tb==='monster'?500:250),v={},bad=[],note=[];
+ const c0=SC.c!=null?SC.c:(SC.cRaw!=null?(SC.cRaw<=60?SC.cRaw:SC.cRaw/(SC.ml||ml)*100):null);
+ [['k',SC.k],['s',SC.s],['c',c0]].forEach(([f,x])=>{if(x==null)return;
+  if(x<SC_RANGE[f][0]||x>SC_RANGE[f][1])bad.push(f);else v[f]=x});
+ if(v.s!=null&&v.k!=null&&v.s>2&&v.k<v.s*3)note.push('kcal und Zucker passen nicht zusammen (Zucker hat etwa 4 kcal pro g)');
+ return{v,bad,note}}
+const SC_LAB={k:'kcal',s:'Zucker',c:'Koffein'};
+const SC_WHERE={k:'die Zeile „Brennwert / Energie … kcal“',s:'die Zeile „davon Zucker“',c:'die Zeile „Koffein … mg/100 ml“ (steht manchmal getrennt von der Tabelle)'};
+function scApply(){
+ const F=scFinal();
+ if(SC.ml){if(SIZES[tb].indexOf(SC.ml)<0){SIZES[tb].push(SC.ml);SIZES[tb].sort((a,b)=>a-b);$('tMl').innerHTML=SIZES[tb].map(m=>`<option value="${m}">${m} ml</option>`).join('')}pick.ml[tb]=SC.ml;$('tMl').value=SC.ml}
+ const ml=parseInt($('tMl').value,10)||(tb==='monster'?500:250),f=ml/100;
+ if(F.v.k!=null)pick.cust.k=r1(F.v.k*f);if(F.v.s!=null)pick.cust.s=r1(F.v.s*f);if(F.v.c!=null)pick.cust.c=r1(F.v.c*f);
+ if(SC.name&&!String(pick.cust.n||'').trim())pick.cust.n=SC.name;
+ savePick();fillTrack();return F}
+/* Anleitung und Fortschritt anzeigen */
+function scRender(extra){
+ const F=scFinal(),has=f=>F.v[f]!=null,missing=['k','s','c'].filter(f=>!has(f)),any=has('k')||has('s')||has('c');
+ const chip=(ok,t)=>`<span class="scc${ok?' ok':''}">${ok?'✓':'○'} ${t}</span>`;
+ $('scChips').innerHTML=chip(has('k'),'kcal')+chip(has('s'),'Zucker')+chip(has('c'),'Koffein')+chip(SC.ml!=null,'Größe')+chip(!!SC.code,'Barcode');
+ let h,cls='';
+ if(extra){h=extra.h;cls=extra.cls||''}
+ else if(!any&&!SC.code){h='<b>So scannst du richtig</b><ol><li><b>Nährwerttabelle:</b> Dose umdrehen und die Tabelle „pro 100 ml“ so fotografieren, dass sie das Bild füllt. Gerade halten, Blitz aus, kein Fenster- oder Lampenlicht, das spiegelt.</li><li><b>Barcode:</b> nur wenn etwas fehlt. Den Strichcode in die Mitte halten, Dose ruhig halten. Die App holt dann kcal, Zucker und Koffein aus der Datenbank.</li><li><b>Tipp iPhone:</b> Klappt das Lesen schlecht, kopiere den Text mit der <b>Live-Text</b>-Funktion der Kamera-App und tippe hier auf „Text einfügen“.</li></ol>'}
+ else if(!missing.length){cls='ok';h='<b>✓ Alles erkannt</b>Bitte kurz mit der Dose vergleichen, dann unten „+ Getrunken“ tippen.'}
+ else{cls='warn';const need=missing.map(f=>SC_LAB[f]).join(', ');
+  let step;
+  if(!SC.tab)step='Fotografiere als Nächstes die <b>Nährwerttabelle</b> (Rückseite der Dose).';
+  else if(!SC.code)step=`Scanne jetzt den <b>Barcode</b>. Damit holt die App „${need}“ aus der Datenbank. Oder fotografiere noch einmal näher ${missing.map(f=>SC_WHERE[f]).join(' und ')}.`;
+  else step=`Barcode war schon da, aber die Datenbank hat „${need}“ nicht. Fotografiere ${missing.map(f=>SC_WHERE[f]).join(' und ')} näher und bei besserem Licht, oder trage es unten von Hand ein.`;
+  h=`<b>Es fehlt noch: ${need}</b>${step}`}
+ if(!extra&&F.bad.length)h+=`<br><small>⚠ Unplausibel gelesen und weggelassen: ${F.bad.map(f=>SC_LAB[f]).join(', ')}. Bitte neu scannen oder von Hand eintragen.</small>`;
+ if(!extra&&F.note.length)h+=`<br><small>⚠ ${F.note.join('. ')}. Bitte neu scannen oder prüfen.</small>`;
+ if(!extra&&SC.note.length)h+=`<br><small>${SC.note.join(' ')}</small>`;
+ const el=$('scNext');el.className='scNext '+cls;el.innerHTML=h;
+ $('scNew').hidden=!(any||SC.code)}
+function scan(mode){const N=window.CanRadarNative;
+ if(!N||!N.scanLabel){scMsg('Scannen geht nur in der App.');return}
+ scBusy(true);scMsg(mode.indexOf('barcode')>-1?'Kamera wird geöffnet … Barcode ganz ins Bild, waagerecht und scharf.':'Kamera wird geöffnet … Tabelle bildfüllend, gerade, ohne Spiegelung.');N.scanLabel(mode)}
+let scLiveTried=false;
+function scanBar(){const N=window.CanRadarNative;
+ if(!N){scMsg('Scannen geht nur in der App.');return}
+ if(N.scanBarcodeLive&&!scLiveTried){scBusy(true);scMsg('Scanner wird gestartet … Barcode in den Rahmen halten.');N.scanBarcodeLive()}
+ else scan('camera:barcode')}
+window.__scanCb=async r=>{
+ scBusy(false);
+ if(!r||r.cancel){scMsg('Abgebrochen. Du kannst es nochmal versuchen oder von Hand eintragen.');return}
+ if(r.liveFail){scLiveTried=true;scMsg((r.reason==='denied'?'Kein Kamera-Zugriff. Erlaube die Kamera für Can Radar (iPhone-Einstellungen, Safari). ':'Der Live-Scanner geht gerade nicht. ')+'Tippe noch einmal auf „Barcode scannen“, dann kannst du ein Foto vom Barcode machen.');return}
+ if(r.error){scMsg('Scannen hat nicht geklappt: '+r.error+'. Trage die Werte bitte von Hand ein.');return}
+ const kind=r.kind==='barcode'?'barcode':'table',code=(r.codes&&r.codes[0])||'';
+ scBusy(true);scMsg('Werte werden gelesen …');
+ /* anderer Barcode als vorher = neue Dose: alten Stand verwerfen */
+ if(code&&SC.code&&code!==SC.code)scReset();
+ SC.note=[];
+ if(kind==='table'){SC.tab++;const p=parseBoth(r.rows,r.text);scMerge(p,'T')}
+ else SC.bar++;
+ if(code)SC.code=code;
+ let extra=null;
+ const need=!(SC.k!=null&&SC.s!=null&&(SC.c!=null||SC.cRaw!=null)&&SC.ml!=null);
+ if(SC.code&&(kind==='barcode'||need)){
+  try{const w=await offLookup(SC.code);
+   if(!w.found){SC.off='none'}
+   else{SC.off='hit';if(w.name&&!SC.name)SC.name=w.name;scMerge({k:w.k,s:w.s,c:w.c!=null&&w.c>0?w.c:null,ml:w.ml},'B');
+    if(w.est)SC.note.push('Koffein ist geschätzt (32 mg/100 ml, wie bei dieser Marke üblich). Bitte mit der Dose abgleichen.');
+    if(w.k==null&&w.s==null&&w.c==null)SC.off='empty'}
+  }catch(e){SC.off='fail'}}
+ scBusy(false);
+ const F=scApply();
+ const SC_U={k:' kcal',s:' g Zucker',c:' mg Koffein'},got=['k','s','c'].filter(f=>F.v[f]!=null).map(f=>de1(F.v[f])+SC_U[f]+(SC.from[f]==='B'?' (Barcode)':''));
+ /* Rückmeldung zu diesem Scan */
+ if(kind==='barcode'){
+  if(!code){extra={cls:'warn',h:'<b>Kein Barcode erkannt</b>Halte den Strichcode waagerecht in die Mitte, nah genug, dass er ein Drittel des Bildes füllt. Bei Spiegelung die Dose leicht kippen. Der Code steht meist unten auf der Rückseite oder am Dosenrand.'}}
+  else if(SC.off==='fail'){extra={cls:'warn',h:`<b>Barcode ${esc(code)} erkannt, aber keine Verbindung</b>Zum Nachschlagen braucht die App Internet. Schalte es ein und scanne noch einmal, oder fotografiere die Nährwerttabelle.`}}
+  else if(SC.off==='none'||SC.off==='empty'){extra={cls:'warn',h:`<b>Barcode ${esc(code)} erkannt, aber nicht in der Datenbank</b>Fotografiere die <b>Nährwerttabelle</b> auf der Rückseite, daraus liest die App die Werte.`}}}
+ else if(!got.length){extra={cls:'warn',h:'<b>Nichts erkannt</b><ol><li>Dose gerade halten, Tabelle füllt das Bild</li><li>Mehr Licht, Blitz aus, keine Spiegelung (Dose leicht kippen)</li><li>Näher ran, bis der Text scharf ist</li><li>Oder den <b>Barcode</b> scannen</li><li>Oder den Text über „Text einfügen“ (Live-Text) übernehmen</li></ol>'}}
+ scRender(extra);
+ scMsg(got.length?'Erkannt pro 100 ml: '+got.join(' · ')+'. Umgerechnet auf '+(parseInt($('tMl').value,10)||'')+' ml. Bitte kurz prüfen.':'')};
+$('scCam').onclick=()=>scan('camera:table');$('scPic').onclick=()=>scan('gallery:table');$('scBar').onclick=scanBar;
+$('scNew').onclick=()=>{scReset();scMsg('Zurückgesetzt. Neue Dose scannen.')};
+$('scanRow').hidden=!(window.CanRadarNative&&window.CanRadarNative.scanLabel);
+scRender();
+const fmtDay=s=>s===today?'Heute':s===iso(new Date(Date.now()-864e5))?'Gestern':new Date(s+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short',day:'numeric',month:'short'});
+function renderTrack(){
+ $('dtitle').textContent=fmtDay(cur);$('next').disabled=cur>=today;$('next').style.opacity=cur>=today?.3:1;
+ const es=dayEs(cur).slice().sort((a,b)=>a.ts-b.ts),t=sum(es);
+ const C=2*Math.PI*52,p=Math.min(1,t.c/UI.goal);$('goalTxt').textContent=UI.goal;
+ const col=t.c>UI.goal?'#ff4d5e':t.c>UI.goal*.7?'#ffb020':'var(--caf)';
+ $('ring').setAttribute('stroke-dasharray',`${p*C} ${C}`);$('ring').style.stroke=col;
+ $('rCaf').textContent=Math.round(t.c);
+ const left=UI.goal-t.c,rl=$('rLeft');rl.textContent=left>=0?Math.round(left)+' mg frei':'+'+Math.round(-left)+' mg drüber';rl.style.color=col;
+ $('dayBig').innerHTML=`<div><b>${t.n}</b><i>Dosen</i></div><div><b>${Math.round(t.k)}</b><i>kcal</i></div><div><b>${Math.round(t.s)} g</b><i>Zucker</i></div>`;
+ renderCal();
+ $('tList').innerHTML=es.length?es.map(e=>{const v=vOf(e);if(!v)return '';const x=calc(e),tm=iso(new Date(e.ts))===e.date?hm(new Date(e.ts))+' Uhr · ':'';
+  return `<div class="ent"><i style="background:${v.b==='monster'?'#7dff3a':'#5b86ff'}"></i><div><b>${esc(v.n)}</b><div class="mini">${tm}${e.ml} ml · ${Math.round(x.k)} kcal · ${de1(x.s)} g Zucker · ${Math.round(x.c)} mg Koffein</div></div><div class="acts"><button class="dup" data-dup="${e.id}" aria-label="Nochmal eintragen">Nochmal</button><button data-rm="${e.id}">Löschen</button></div></div>`}).join(''):'<div class="card empty">Für diesen Tag ist noch nichts eingetragen.</div>';
+ renderPrev();
+ const days=[];for(let i=6;i>=0;i--)days.push(iso(new Date(Date.now()-i*864e5)));
+ const cnt=days.map(d=>dayEs(d).length),mx=Math.max(1,...cnt);
+ $('week').innerHTML=days.map((d,j)=>`<div><em style="height:${cnt[j]/mx*64}px"></em>${cnt[j]}<br>${new Date(d+'T12:00:00').toLocaleDateString('de-DE',{weekday:'short'})}</div>`).join('');
+ const w=sum([].concat(...days.map(dayEs))),all=MEMO.all||(MEMO.all=sum(LOG));
+ $('sumBig').innerHTML=[[w.n,'Dosen'],[Math.round(w.k),'kcal'],[Math.round(w.s)+' g','Zucker'],[Math.round(w.c)+' mg','Koffein']].map(x=>`<div><b>${x[0]}</b><i>${x[1]}</i></div>`).join('');
+ $('allLine').textContent=`Gesamt seit Start: ${all.n} Dosen · ${Math.round(all.k)} kcal · ${Math.round(all.s)} g Zucker · ${Math.round(all.c)} mg Koffein`;
+}
+$('tList').onclick=ev=>{const b=ev.target.closest&&ev.target.closest('button');if(!b)return;
+ if(b.dataset.rm){const o=LOG.find(x=>x.id===b.dataset.rm);if(!o)return;LOG=LOG.filter(x=>x!==o);save();renderTrack();toast('Eintrag gelöscht','Rückgängig',()=>{LOG.push(o);save();renderTrack()})}
+ else if(b.dataset.dup){const o=LOG.find(x=>x.id===b.dataset.dup);if(!o)return;const n=Object.assign({},o,{id:'e'+Date.now()+Math.random().toString(36).slice(2,6),ts:Date.now(),date:cur});if(o.v)n.v=Object.assign({},o.v);LOG.push(n);save();renderTrack();toast('Nochmal eingetragen','Rückgängig',()=>{LOG=LOG.filter(x=>x!==n);save();renderTrack()})}};
+$('tAdd').onclick=()=>{const d=draft();if(!d)return;LOG.push(mkEntry(d,cur));save();if(isX())scReset();renderTrack()};
+$('prev').onclick=()=>{const d=new Date(cur+'T12:00:00');d.setDate(d.getDate()-1);cur=iso(d);VM=cur.slice(0,7);renderTrack()};
+$('next').onclick=()=>{if(cur>=today)return;const d=new Date(cur+'T12:00:00');d.setDate(d.getDate()+1);cur=iso(d);VM=cur.slice(0,7);renderTrack()};
+
+/* Kalender + Monatsauswertung */
+const ymOf=(y,m)=>y+'-'+(m<10?'0':'')+m;
+const monthName=ym=>new Date(+ym.slice(0,4),+ym.slice(5,7)-1,1).toLocaleDateString('de-DE',{month:'long',year:'numeric'});
+const shiftM=(ym,d)=>{const x=new Date(+ym.slice(0,4),+ym.slice(5,7)-1+d,1);return ymOf(x.getFullYear(),x.getMonth()+1)};
+function dayStats(){if(MEMO.ds)return MEMO.ds;const m={};LOG.forEach(e=>{if(!vOf(e))return;const x=calc(e),q=m[e.date]||(m[e.date]={n:0,c:0});q.n++;q.c+=x.c});return MEMO.ds=m}
+function renderCal(){
+ const y=+VM.slice(0,4),mo=+VM.slice(5,7),first=new Date(y,mo-1,1),dim=new Date(y,mo,0).getDate(),off=(first.getDay()+6)%7,ds=dayStats();
+ $('cTitle').textContent=monthName(VM);
+ $('cNext').disabled=VM>=today.slice(0,7);
+ let h=['Mo','Di','Mi','Do','Fr','Sa','So'].map(w=>'<div class="wd">'+w+'</div>').join('');
+ for(let i=0;i<off;i++)h+='<span></span>';
+ for(let d=1;d<=dim;d++){
+  const key=ymOf(y,mo)+'-'+(d<10?'0':'')+d,q=ds[key],lv=q?(q.c>UI.goal?'l3':q.c>UI.goal*.7?'l2':'l1'):'';
+  h+='<button data-d="'+key+'" class="'+[lv,key===today?'td':'',key===cur?'sel':''].join(' ')+'"'+(key>today?' disabled':'')+' aria-label="'+d+'. '+monthName(VM)+(q?', '+q.n+' Dosen':'')+'">'+d+(q?'<small>'+q.n+'</small>':'')+'</button>'}
+ $('calGrid').innerHTML=h}
+$('calGrid').onclick=e=>{const b=e.target.closest&&e.target.closest('button[data-d]');if(!b||b.disabled)return;cur=b.dataset.d;VM=cur.slice(0,7);renderTrack();const t=$('dtitle');if(t&&t.scrollIntoView)t.scrollIntoView({behavior:'smooth',block:'start'})};
+$('cPrev').onclick=()=>{VM=shiftM(VM,-1);renderCal()};
+$('cNext').onclick=()=>{if(VM>=today.slice(0,7))return;VM=shiftM(VM,1);renderCal()};
+function monthStats(ym){
+ const t={n:0,mon:0,rb:0,ml:0,k:0,s:0,c:0,days:0,over:0,peak:0,peakd:''},per={};
+ LOG.filter(e=>e.date.slice(0,7)===ym).forEach(e=>{const v=vOf(e);if(!v)return;const x=calc(e);t.n++;if(v.b==='monster')t.mon++;else t.rb++;t.ml+=e.ml;t.k+=x.k;t.s+=x.s;t.c+=x.c;per[e.date]=(per[e.date]||0)+x.c});
+ Object.keys(per).forEach(d=>{t.days++;if(per[d]>UI.goal)t.over++;if(per[d]>t.peak){t.peak=per[d];t.peakd=d}});
+ return t}
+const de1=n=>(Math.round(n*10)/10).toString().replace('.',',');
+function monthHTML(ym){
+ const t=monthStats(ym);
+ if(!t.n)return '<p class="mini">In diesem Monat ist nichts eingetragen.</p>';
+ const tile=(v,l,c)=>'<div class="'+(c||'')+'"><b>'+v+'</b><i>'+l+'</i></div>';
+ const pd=t.peakd?t.peakd.slice(8,10)+'.'+t.peakd.slice(5,7)+'.':'';
+ return '<div class="mgrid">'+tile(t.mon,'Monster-Dosen','mon')+tile(t.rb,'Red-Bull-Dosen','rb')
+  +tile(t.n,'Dosen gesamt')+tile(Math.round(t.k)+' kcal','Kalorien')
+  +tile(Math.round(t.s)+' g','Zucker')+tile(Math.round(t.c)+' mg','Koffein')
+  +tile(de1(t.ml/1000)+' L','Flüssigkeit')+tile(de1(t.n/t.days),'Dosen pro Trinktag')
+  +tile(t.days,'Tage mit Dose')+tile(t.over,'Tage über Ziel')+'</div>'
+  +'<p class="note">Zucker entspricht etwa '+Math.round(t.s/3)+' Würfelzucker (je 3 g). Höchster Tag: '+pd+' mit '+Math.round(t.peak)+' mg Koffein. Tagesziel: '+UI.goal+' mg.</p>'}
+function openReview(ym,title){$('rvT').textContent=title||monthName(ym);$('rvBody').innerHTML=monthHTML(ym);$('rvPop').hidden=false}
+let rvKey='';
+function closeReview(){$('rvPop').hidden=true;if(rvKey){try{localStorage.setItem('canradar_rev',rvKey)}catch(e){}rvKey=''}}
+$('rvX').onclick=closeReview;$('rvOk').onclick=closeReview;
+$('rvPop').addEventListener('click',e=>{if(e.target===$('rvPop'))closeReview()});
+$('cSum').onclick=()=>openReview(VM,(VM===today.slice(0,7)?'Bisher im ':'')+monthName(VM));
+function checkReview(){
+ let seen='';try{seen=localStorage.getItem('canradar_rev')||''}catch(e){}
+ const now=new Date(),cm=today.slice(0,7),last=new Date(now.getFullYear(),now.getMonth()+1,0).getDate()===now.getDate();
+ const cands=[];if(last)cands.push(cm);cands.push(shiftM(cm,-1));
+ for(const ym of cands){if(ym>seen&&monthStats(ym).n){rvKey=ym;openReview(ym,'Monatsrückblick '+monthName(ym));return}}}
+/* ===== Text einfügen (Live-Text vom iPhone) ===== */
+$('scPaste').onclick=()=>{$('pastePop').hidden=false};
+$('pasteX').onclick=()=>{$('pastePop').hidden=true};
+$('pastePop').addEventListener('click',e=>{if(e.target===$('pastePop'))$('pastePop').hidden=true});
+$('pasteGo').onclick=()=>{const t=$('pasteIn').value;if(!t.trim())return;$('pastePop').hidden=true;$('pasteIn').value='';window.__scanCb({kind:'table',text:t,rows:t,codes:[]})};
+
+/* ===== Sicherung der Einträge ===== */
+const bkMsg=t=>{$('bkMsg').textContent=t};
+$('bkOut').onclick=async()=>{
+ const txt=JSON.stringify({app:'canradar',v:1,saved:new Date().toISOString(),log:LOG,ui:UI});
+ $('bkBox').hidden=false;$('bkGo').hidden=true;$('bkText').value=txt;
+ try{await navigator.clipboard.writeText(txt);bkMsg('✓ Kopiert ('+LOG.length+' Einträge). Füge den Text z. B. in Notizen ein und hebe ihn auf.')}
+ catch(e){$('bkText').focus();$('bkText').select();try{$('bkText').setSelectionRange(0,txt.length)}catch(_){}bkMsg('Der Text ist markiert. Lange tippen und „Kopieren“ wählen.')}};
+$('bkIn').onclick=()=>{$('bkBox').hidden=false;$('bkText').value='';$('bkGo').hidden=false;bkMsg('Sicherungstext einfügen und „Jetzt wiederherstellen“ tippen.')};
+$('bkGo').onclick=()=>{
+ let o;try{o=JSON.parse($('bkText').value.trim())}catch(e){bkMsg('✗ Das ist kein gültiger Sicherungstext.');return}
+ if(!o||o.app!=='canradar'||!Array.isArray(o.log)){bkMsg('✗ Das ist keine Can-Radar-Sicherung.');return}
+ const have=new Set(LOG.map(e=>e.id));let add=0;
+ o.log.forEach(e=>{
+  if(!e||typeof e.id!=='string'||have.has(e.id)||!ISO_RE.test(e.date||'')||!(+e.ml>0)||typeof e.vid!=='string')return;
+  if(e.vid==='x'){if(!(e.v&&isFinite(+e.v.k)&&isFinite(+e.v.s)&&isFinite(+e.v.c)))return}
+  else if(!ALLV[e.vid])return;
+  const n={id:e.id,ts:+e.ts||Date.now(),date:e.date,ml:+e.ml,vid:e.vid};
+  if(e.vid==='x'){n.b=e.b==='redbull'?'redbull':'monster';n.nm=String(e.nm||'Eigene Dose').slice(0,40);n.v={k:+e.v.k,s:+e.v.s,c:+e.v.c}}
+  LOG.push(n);have.add(e.id);add++});
+ if(o.ui&&typeof o.ui==='object'){
+  if(['auto','light','dark'].indexOf(o.ui.theme)>-1)UI.theme=o.ui.theme;
+  if(PRESETS.some(p=>p.id===o.ui.bg))UI.bg=o.ui.bg;
+  if(goalOk(+o.ui.goal))UI.goal=Math.round(+o.ui.goal);
+  UI.btn=o.ui.btn==='black'?'black':'white';
+  saveUI();applyUI();renderTheme();$('goalIn').value=UI.goal;renderGoalInfo()}
+ save();renderTrack();$('bkText').value='';$('bkBox').hidden=true;
+ bkMsg('✓ '+add+' Einträge hinzugefügt ('+(o.log.length-add)+' schon vorhanden oder ungültig).')};
+
+/* ===== Version und letzter Fehler ===== */
+function renderErr(){
+ const N=window.CanRadarNative,el=$('errLine'),a=N&&N.errLog?N.errLog():[];
+ if(!a.length){el.hidden=true;return}
+ const l=a[a.length-1];el.hidden=false;
+ el.textContent='Letzter Fehler ('+String(l.t).slice(0,16).replace('T',' ')+', '+l.w+'): '+l.m+'\n[tippen = löschen]'}
+$('errLine').onclick=()=>{const N=window.CanRadarNative;if(N&&N.errClear)N.errClear();renderErr()};
+try{$('verLine').textContent='Version '+((window.CanRadarNative&&window.CanRadarNative.version)||'')+' · iPhone'}catch(e){}
+
+fillTrack();renderDeals();renderNear();renderTrack();checkReview();
+setInterval(()=>{if(!document.hidden)sync(false)},120000);
+sync(true);
+document.addEventListener('visibilitychange',()=>{
+ if(document.hidden)return;
+ const nt=iso(new Date());if(nt!==today){if(cur===today)cur=nt;today=nt;VM=cur.slice(0,7);renderTrack();checkReview()}
+ renderAll();sync(false)});
+if(h0==='near'&&!started){started=true;locate()}
+})();
+</script>
+</body>
+</html>
