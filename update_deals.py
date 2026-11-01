@@ -254,6 +254,16 @@ def load_offers(brand: str, bslug: str):
     return []
 
 
+def write_out(deals, today: dt.date) -> None:
+    out = {
+        "generated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+        "stand": today.isoformat(),
+        "deals": deals,
+        "empty": {},
+    }
+    OUT.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     try:
         from zoneinfo import ZoneInfo
@@ -289,25 +299,27 @@ def main() -> int:
                 time.sleep(2)
             print(f"{store}/{brand}: {len(mine)} Angebot(e), Prospekt-Gültigkeit {val}")
             if val:
-                found += build_items(raws[brand], store, brand, subs, val)
+                try:
+                    found += build_items(raws[brand], store, brand, subs, val)
+                except Exception as e:  # noqa: BLE001
+                    print("FEHLER beim Auswerten", store, brand, e, file=sys.stderr)
+                    failed.add((store, brand))
     keep = [d for d in old if (d.get("s"), d.get("b")) in failed]
     deals = clean(found + keep, today)
-    if not raws:
-        # Keine einzige kaufDA-Seite lesbar -> echter Fehler, Workflow soll rot werden
-        print("kaufDA nicht erreichbar – deals.json bleibt unverändert.", file=sys.stderr)
+    got_offers = any(raws.values())  # wurde auf kaufDA überhaupt irgendein Angebot gelesen?
+    if not got_offers:
+        # kaufDA nicht erreichbar oder Seitenaufbau geändert: alte Angebote behalten,
+        # aber abgelaufene entfernen, damit nie ein veraltetes Angebot angezeigt wird.
+        write_out(clean(old, today), today)
+        print("Keine Angebote auf kaufDA gelesen (Seite down oder Aufbau geändert) – "
+              "nur abgelaufene Angebote entfernt.", file=sys.stderr)
         return 1
+    write_out(deals, today)
     if not deals:
         # z. B. Sonntag: alte Prospekte abgelaufen, neue starten erst Montag -> kein Fehler
-        print("Aktuell keine gültigen Angebote – deals.json bleibt unverändert.")
-        return 0
-    out = {
-        "generated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-        "stand": today.isoformat(),
-        "deals": deals,
-        "empty": {},
-    }
-    OUT.write_text(json.dumps(out, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    print(f"{len(deals)} Angebote geschrieben.")
+        print("Aktuell keine gültigen Angebote – Liste ist leer.")
+    else:
+        print(f"{len(deals)} Angebote geschrieben.")
     return 0
 
 
