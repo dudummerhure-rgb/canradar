@@ -33,7 +33,7 @@ jobs:
         run: python update_deals.py
 
       - name: Speichern
-        if always() 
+        if: always()
         run: |
           git config user.name "canradar-bot"
           git config user.email "bot@users.noreply.github.com"
