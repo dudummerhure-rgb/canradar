@@ -292,9 +292,14 @@ def main() -> int:
                 found += build_items(raws[brand], store, brand, subs, val)
     keep = [d for d in old if (d.get("s"), d.get("b")) in failed]
     deals = clean(found + keep, today)
-    if not raws or not deals:
-        print("Nichts Gültiges gefunden – deals.json bleibt unverändert.", file=sys.stderr)
+    if not raws:
+        # Keine einzige kaufDA-Seite lesbar -> echter Fehler, Workflow soll rot werden
+        print("kaufDA nicht erreichbar – deals.json bleibt unverändert.", file=sys.stderr)
         return 1
+    if not deals:
+        # z. B. Sonntag: alte Prospekte abgelaufen, neue starten erst Montag -> kein Fehler
+        print("Aktuell keine gültigen Angebote – deals.json bleibt unverändert.")
+        return 0
     out = {
         "generated": dt.datetime.now(dt.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "stand": today.isoformat(),
