@@ -1,22 +1,46 @@
 name: Angebote aktualisieren
+
 on:
   schedule:
-      - cron: "7,37 * * * *"
-  workflow_dispatch: {}       # zusätzlich per Knopfdruck startbar
+    - cron: "7,37 * * * *"
+  workflow_dispatch: {}   # zusätzlich per Knopfdruck startbar
+
 permissions:
   contents: write
+
+concurrency:
+  group: update-deals
+  cancel-in-progress: false
+
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-      - run: python update_deals.py
+
+      - name: Abhängigkeiten installieren
+        run: |
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
+
+      - name: Angebote aktualisieren
+        run: python update_deals.py
+
       - name: Speichern
         run: |
           git config user.name "canradar-bot"
           git config user.email "bot@users.noreply.github.com"
           git add deals.json
-          git diff --staged --quiet || (git commit -m "Angebote aktualisiert" && git push)
+          if git diff --staged --quiet; then
+            echo "Keine Änderungen"
+            exit 0
+          fi
+          git commit -m "Angebote aktualisiert"
+          git pull --rebase
+          git push
