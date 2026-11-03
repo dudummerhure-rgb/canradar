@@ -2,8 +2,8 @@ name: Angebote aktualisieren
 
 on:
   schedule:
-    - cron: "7,37 * * * *"
-  workflow_dispatch: {}   # zusätzlich per Knopfdruck startbar
+    - cron: "7 * * * *"      # stündlich (alle Regionen auf einmal zu laden ist aufwendiger als vorher)
+  workflow_dispatch: {}      # zusätzlich per Knopfdruck startbar
 
 permissions:
   contents: write
@@ -15,19 +15,13 @@ concurrency:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v5
 
       - uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-
-      - name: Abhängigkeiten installieren
-        run: |
-          if [ -f requirements.txt ]; then
-            pip install -r requirements.txt
-          fi
 
       - name: Angebote aktualisieren
         run: python update_deals.py
