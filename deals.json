@@ -1,17 +1,122 @@
 {
-  "generated": "2026-11-03T19:20:32Z",
+  "version": 2,
+  "generated": "2026-11-03T22:21:33Z",
   "stand": "2026-11-03",
-  "deals": [
+  "regions": [
     {
-      "s": "edeka",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.99,
-      "was": 1.59,
-      "until": "2026-11-07",
-      "note": "Vergleichspreis"
+      "id": "koeln",
+      "name": "Köln",
+      "lat": 50.9375,
+      "lon": 6.9603,
+      "radius": 30
     },
+    {
+      "id": "bonn",
+      "name": "Bonn",
+      "lat": 50.7374,
+      "lon": 7.0982,
+      "radius": 20
+    },
+    {
+      "id": "aachen",
+      "name": "Aachen",
+      "lat": 50.7753,
+      "lon": 6.0839,
+      "radius": 25
+    },
+    {
+      "id": "duesseldorf",
+      "name": "Düsseldorf",
+      "lat": 51.2277,
+      "lon": 6.7735,
+      "radius": 25
+    },
+    {
+      "id": "essen",
+      "name": "Essen",
+      "lat": 51.4556,
+      "lon": 7.0116,
+      "radius": 25
+    },
+    {
+      "id": "dortmund",
+      "name": "Dortmund",
+      "lat": 51.5136,
+      "lon": 7.4653,
+      "radius": 25
+    },
+    {
+      "id": "frankfurt",
+      "name": "Frankfurt am Main",
+      "lat": 50.1109,
+      "lon": 8.6821,
+      "radius": 35
+    },
+    {
+      "id": "stuttgart",
+      "name": "Stuttgart",
+      "lat": 48.7758,
+      "lon": 9.1829,
+      "radius": 35
+    },
+    {
+      "id": "muenchen",
+      "name": "München",
+      "lat": 48.1351,
+      "lon": 11.582,
+      "radius": 40
+    },
+    {
+      "id": "nuernberg",
+      "name": "Nürnberg",
+      "lat": 49.4521,
+      "lon": 11.0767,
+      "radius": 30
+    },
+    {
+      "id": "berlin",
+      "name": "Berlin",
+      "lat": 52.52,
+      "lon": 13.405,
+      "radius": 45
+    },
+    {
+      "id": "hamburg",
+      "name": "Hamburg",
+      "lat": 53.5511,
+      "lon": 9.9937,
+      "radius": 40
+    },
+    {
+      "id": "bremen",
+      "name": "Bremen",
+      "lat": 53.0793,
+      "lon": 8.8017,
+      "radius": 30
+    },
+    {
+      "id": "hannover",
+      "name": "Hannover",
+      "lat": 52.3759,
+      "lon": 9.732,
+      "radius": 30
+    },
+    {
+      "id": "leipzig",
+      "name": "Leipzig",
+      "lat": 51.3397,
+      "lon": 12.3731,
+      "radius": 30
+    },
+    {
+      "id": "dresden",
+      "name": "Dresden",
+      "lat": 51.0504,
+      "lon": 13.7373,
+      "radius": 30
+    }
+  ],
+  "deals": [
     {
       "s": "lidl",
       "b": "redbull",
@@ -28,15 +133,6 @@
       "n": 6,
       "price": 4.99,
       "was": 7.49,
-      "until": "2026-11-07"
-    },
-    {
-      "s": "netto",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.88,
-      "was": 1.59,
       "until": "2026-11-07"
     },
     {
