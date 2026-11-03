@@ -36,7 +36,7 @@ UA = "Mozilla/5.0 (compatible; CanRadarBot/1.1; privates Hobbyprojekt)"
 PAUSE = 1.5                 # Sekunden Pause zwischen Seitenabrufen (höflich zu kaufDA)
 TIME_BUDGET = 8 * 60        # nach so vielen Sekunden wird nichts Neues mehr geladen
 MAX_FAILS_IN_ROW = 4        # so viele Fehlschläge hintereinander = kaufDA down, Abbruch
-NATIONAL_SHARE = 0.85       # ab diesem Anteil der Regionen gilt ein Angebot als bundesweit
+NATIONAL_SHARE = 0.5        # ab diesem Anteil der Regionen gilt ein Angebot als bundesweit (überall = anzeigen)
 MIN_REGIONS_FOR_NATIONAL = 5
 
 # Regionen: id (für die App), Name, kaufDA-Schreibweise, Mittelpunkt, Radius in km, in dem der Standort dazugehört.
@@ -297,12 +297,15 @@ def valid(d, today: dt.date):
     return item
 
 
-def clean(items, today: dt.date):
+def clean(items, today: dt.date, log=None):
     """Innerhalb einer Region: je Laden/Marke/Größe nur das günstigste Angebot."""
     best = {}
     for d in items:
         item = valid(d, today)
         if not item:
+            if log:
+                log(f"   verworfen (unplausibel/abgelaufen): {d.get('s')}/{d.get('b')} {d.get('n')}x{d.get('ml')} ml "
+                    f"{d.get('price')} € statt {d.get('was')} bis {d.get('until')}")
             continue
         key = (item["s"], item["b"], item["ml"], item["n"])
         if key not in best or item["price"] < best[key]["price"]:
@@ -435,7 +438,7 @@ def main() -> int:
     per_region, active = {}, []
     for rid in rids:
         keep = [d for d in old_for(rid) if (rid, d.get("b")) in failed_rb or (d.get("s"), d.get("b")) in failed_sb]
-        per_region[rid] = clean(found[rid] + keep, today)
+        per_region[rid] = clean(found[rid] + keep, today, print)
         if any((rid, b) not in failed_rb for b in BRAND_PAGES):
             active.append(rid)
 
