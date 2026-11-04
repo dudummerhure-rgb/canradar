@@ -4,10 +4,11 @@
 Komplett kostenlos: nur Python-Standardbibliothek, kein API-Key. Läuft über GitHub Actions.
 
 Ablauf:
-  1. Preise: kaufDA-Stadtseite je Region und Marke (z. B. /Koeln/Angebote/Red-Bull).
-     Jede Region wird einzeln gelesen. Es gibt KEINEN Rückfall auf die Deutschland-Seite mehr,
-     denn die enthält auch Angebote, die nur in anderen Regionen gelten (z. B. ein Netto-Angebot
-     aus dem Norden, das in Köln gar nicht verfügbar ist).
+  1. Preise: kaufDA-Stadtseite je Region. Die Kategorie-Seite (z. B. /Koeln/Angebote/Energydrink) enthält
+     beide Marken mit den Preisen DIESER Stadt. Zusätzlich werden Marken-Seiten der Stadt gelesen, falls es sie gibt.
+     Es gibt KEINEN Rückfall auf die Deutschland-Seite: kaufDA zeigt dort Angebote für Berlin (Standort des
+     Servers), z. B. Netto Monster 0,88 €, das in Köln gar nicht gilt. Leitet kaufDA eine Stadt-Adresse auf die
+     Deutschland-Seite um, wird das erkannt und die Seite verworfen.
   2. Gültigkeit: kaufDA-Händlerseite (z. B. /Edeka/Sortiment/Red-Bull) -> Prospekt-Zeitraum.
      Angebote, deren Prospekt erst nächste Woche startet, werden übersprungen.
   3. Zusammenführen: Ein Angebot, das (fast) überall auftaucht, ist "bundesweit" (kein Feld "r").
@@ -25,11 +26,13 @@ import math
 import re
 import sys
 import time
+import urllib.error
 import urllib.request
 from pathlib import Path
 
 OUT = Path(__file__).resolve().parent / "deals.json"
 CITY_URL = "https://www.kaufda.de/{city}/Angebote/{brand}"
+CATEGORY_URL = "https://www.kaufda.de/{city}/Angebote/Energydrink"   # enthält Monster UND Red Bull, mit Preisen der Stadt
 STORE_URL = "https://www.kaufda.de/{slug}/Sortiment/{brand}"
 UA = "Mozilla/5.0 (compatible; CanRadarBot/1.1; privates Hobbyprojekt)"
 
@@ -59,25 +62,30 @@ REGIONS = [
     {"id": "dresden", "name": "Dresden", "slug": "Dresden", "lat": 51.0504, "lon": 13.7373, "radius": 30},
 ]
 
-# (App-Laden, kaufDA-Händlerseite, Muster für den Ladennamen in den Angebotstiteln)
+# (App-Laden, kaufDA-Händlerseite für die Gültigkeit, Muster für den Ladennamen im Angebot, Muster im Prospekttitel)
 STORE_PAGES = [
-    ("lidl", "Lidl", (r"\blidl\b",)),
-    ("netto", "Netto-Marken-Discount", (r"marken",)),
-    ("netto", "Netto-Supermarkt", (r"scottie", r"supermarkt")),
-    ("aldi", "Aldi-Sued", (r"\bs(?:ü|ue)d\b",)),
-    ("aldi", "Aldi-Nord", (r"\bnord\b",)),
-    ("edeka", "Edeka", (r"edeka",)),
-    ("kaufland", "Kaufland", (r"kaufland",)),
-    ("penny", "Penny-Markt", (r"penny",)),
-    ("rewe", "REWE", (r"\brewe\b",)),
-    ("trinkgut", "Trinkgut", (r"trinkgut",)),
+    ("lidl", "Lidl", (r"\blidl\b",), (r"\blidl\b",)),
+    ("netto", "Netto-Marken-Discount", (r"marken",), (r"marken",)),
+    ("netto", "Netto-Supermarkt", (r"scottie", r"supermarkt"), (r"scottie", r"supermarkt")),
+    ("aldi", "Aldi-Sued", (r"\bs(?:ü|ue)d\b",), (r"\bs(?:ü|ue)d\b",)),
+    ("aldi", "Aldi-Nord", (r"\bnord\b",), (r"\bnord\b",)),
+    ("edeka", "Edeka", (r"edeka",), (r"edeka", r"e[\s-]?center")),
+    ("edeka", "Edeka", (r"e[\s-]?center",), (r"edeka", r"e[\s-]?center")),   # E center gehört zu Edeka
+    ("kaufland", "Kaufland", (r"kaufland",), (r"kaufland",)),
+    ("penny", "Penny-Markt", (r"penny",), (r"penny",)),
+    ("rewe", "REWE", (r"\brewe\b",), (r"\brewe\b",)),
+    ("trinkgut", "Trinkgut", (r"trinkgut",), (r"trinkgut",)),
+    ("marktkauf", "Marktkauf", (r"marktkauf",), (r"marktkauf",)),
+    ("hit", "HIT", (r"\bhit\b",), (r"\bhit\b",)),
+    ("mueller", "Mueller", (r"m(?:ü|ue)ller",), (r"m(?:ü|ue)ller",)),
+    ("norma", "Norma", (r"\bnorma\b",), (r"\bnorma\b",)),
 ]
 BRAND_PAGES = {"monster": "Monster-Energy", "redbull": "Red-Bull"}
 BRAND_RX = {
     "monster": re.compile(r"\bmonster\b", re.I),
     "redbull": re.compile(r"\bred\s?bull\b", re.I),
 }
-STORES = {s for s, _, _ in STORE_PAGES}
+STORES = {s for s, _, _, _ in STORE_PAGES}
 SIZES = {"monster": [500, 355, 473, 330], "redbull": [250, 330, 355, 473]}
 ALL_SIZES = [250, 330, 355, 473, 500]  # 440 ml gibt es bei Monster/Red Bull in Deutschland nicht
 # Normalpreis pro Liter, wenn die Seite keinen Streichpreis nennt (Dose 0,5 l = 1,59 / 0,25 l = 1,49)
@@ -120,8 +128,13 @@ def attr(tag: str, name: str) -> str:
     return html.unescape((m.group(1) or m.group(2) or "") if m else "")
 
 
-def fetch(url: str) -> str:
-    """Seite laden (3 Versuche). Bricht früh ab, wenn kaufDA offensichtlich nicht antwortet."""
+class NotFound(RuntimeError):
+    """Seite gibt es nicht (404) oder kaufDA hat sie auf eine andere Seite umgeleitet."""
+
+
+def fetch(url: str, expect: str = "") -> str:
+    """Seite laden (3 Versuche). expect = Text, der in der Adresse nach Umleitungen noch stehen muss
+    (z. B. der Städtename). Bricht früh ab, wenn kaufDA offensichtlich nicht antwortet."""
     global _fails_in_row
     if time.time() - _START > TIME_BUDGET:
         raise RuntimeError(f"{url}: Zeitbudget aufgebraucht")
@@ -132,13 +145,23 @@ def fetch(url: str) -> str:
         try:
             req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept-Language": "de-DE,de;q=0.9"})
             with urllib.request.urlopen(req, timeout=30) as r:
+                final = r.geturl()
                 text = r.read().decode("utf-8", "replace")
             _fails_in_row = 0
+            if expect and expect.lower() not in final.lower():
+                raise NotFound(f"{url}: umgeleitet nach {final}")
             return text
+        except NotFound:
+            raise
+        except urllib.error.HTTPError as e:
+            if e.code in (404, 410):
+                _fails_in_row = 0
+                raise NotFound(f"{url}: HTTP {e.code}") from e
+            last = e
         except Exception as e:  # noqa: BLE001
             last = e
-            if attempt < 2:
-                time.sleep(3 * (attempt + 1))
+        if attempt < 2:
+            time.sleep(3 * (attempt + 1))
     _fails_in_row += 1
     raise RuntimeError(f"{url}: {last}")
 
@@ -313,12 +336,34 @@ def clean(items, today: dt.date, log=None):
     return sorted(best.values(), key=lambda x: (x["s"], x["b"], x["ml"], x["n"]))
 
 
-def load_offers(region, brand: str, bslug: str):
-    """Angebote einer Marke in einer Region. Kein Rückfall auf die Deutschland-Seite!"""
-    url = CITY_URL.format(city=region["slug"], brand=bslug)
-    raws = parse_offers(fetch(url), brand, print)
-    print(f"{url}: {len(raws)} Angebot(e) gelesen")
-    return raws
+def load_region(region):
+    """{Marke: [Angebote]} einer Region. Wirft nur, wenn gar keine Seite der Region lesbar war."""
+    slug = region["slug"]
+    urls = [CATEGORY_URL.format(city=slug)] + [CITY_URL.format(city=slug, brand=b) for b in BRAND_PAGES.values()]
+    pages, errors = [], []
+    for url in urls:
+        try:
+            pages.append((url, fetch(url, expect=slug)))
+        except NotFound as e:
+            print(f"   (gibt es nicht) {e}")
+        except Exception as e:  # noqa: BLE001
+            errors.append(e)
+            print("FEHLER", e, file=sys.stderr)
+        time.sleep(PAUSE)
+    if not pages:
+        raise RuntimeError(f"{region['id']}: keine Seite lesbar ({errors[-1] if errors else 'nicht vorhanden'})")
+    result = {}
+    for brand in BRAND_PAGES:
+        seen, offers = set(), []
+        for url, page in pages:
+            for o in parse_offers(page, brand, lambda *a: print(f"   [{url.split('/')[-1]}]", *a)):
+                key = (o["shop"].lower(), o["price"], o["name"].lower())
+                if key not in seen:
+                    seen.add(key)
+                    offers.append(o)
+        print(f"{region['id']}/{brand}: {len(offers)} Angebot(e) gelesen")
+        result[brand] = offers
+    return result
 
 
 def merge_regions(per_region, active):
@@ -373,20 +418,18 @@ def main() -> int:
     raws = {rid: {} for rid in rids}
     failed_rb = set()
     for region in REGIONS:
-        for brand, bslug in BRAND_PAGES.items():
-            try:
-                raws[region["id"]][brand] = load_offers(region, brand, bslug)
-            except Exception as e:  # noqa: BLE001
-                print("FEHLER", e, file=sys.stderr)
-                failed_rb.add((region["id"], brand))
-            time.sleep(PAUSE)
+        try:
+            raws[region["id"]] = load_region(region)
+        except Exception as e:  # noqa: BLE001
+            print("FEHLER", e, file=sys.stderr)
+            failed_rb |= {(region["id"], b) for b in BRAND_PAGES}
     got_offers = any(raws[rid].get(b) for rid in rids for b in BRAND_PAGES)
 
     # 2) Gültigkeit je Laden und Marke (einmal pro Laden, nicht pro Region)
     val_cache = {}
 
     def get_validity(slug, brand, subs):
-        k = (slug, brand)
+        k = (slug, brand, subs)
         if k not in val_cache:
             try:
                 val_cache[k] = ("ok", validity(fetch(STORE_URL.format(slug=slug, brand=BRAND_PAGES[brand])), today, subs))
@@ -394,7 +437,7 @@ def main() -> int:
                 print("FEHLER", e, file=sys.stderr)
                 val_cache[k] = ("fail", None)
             print(f"{slug}/{brand}: Prospekt-Gültigkeit {val_cache[k][1]}" if val_cache[k][0] == "ok"
-                  else f"{slug}/{brand}: Gültigkeit nicht lesbar")
+                  else f"{slug}/{brand}: Gültigkeit nicht lesbar", file=None if val_cache[k][0] == "ok" else sys.stderr)
             time.sleep(PAUSE)
         return val_cache[k]
 
@@ -406,11 +449,11 @@ def main() -> int:
             for brand in BRAND_PAGES:
                 if brand not in raws[rid]:
                     continue
-                for store, slug, subs in STORE_PAGES:
+                for store, slug, subs, vsubs in STORE_PAGES:
                     mine = [r for r in raws[rid][brand] if shop_is(r["shop"], subs)]
                     if not mine:
                         continue
-                    state, val = get_validity(slug, brand, subs)
+                    state, val = get_validity(slug, brand, vsubs)
                     if state == "fail":
                         failed_sb.add((store, brand))
                         continue
