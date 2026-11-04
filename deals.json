@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-04T03:02:47Z",
+  "generated": "2026-11-04T14:01:24Z",
   "stand": "2026-11-04",
   "regions": [
     {
@@ -118,6 +118,66 @@
   ],
   "deals": [
     {
+      "s": "edeka",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.79,
+      "was": 1.59,
+      "until": "2026-11-07",
+      "sh": "EDEKA München",
+      "r": [
+        "muenchen"
+      ]
+    },
+    {
+      "s": "edeka",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.89,
+      "was": 1.59,
+      "until": "2026-11-07",
+      "sh": "EDEKA Köln",
+      "r": [
+        "aachen",
+        "bonn",
+        "dortmund",
+        "duesseldorf",
+        "hamburg",
+        "koeln"
+      ]
+    },
+    {
+      "s": "edeka",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.89,
+      "was": 1.59,
+      "until": "2026-11-07",
+      "note": "Vergleichspreis",
+      "sh": "EDEKA Frankfurt",
+      "r": [
+        "frankfurt",
+        "stuttgart"
+      ]
+    },
+    {
+      "s": "edeka",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.59,
+      "until": "2026-11-07",
+      "note": "Vergleichspreis",
+      "sh": "EDEKA Berlin",
+      "r": [
+        "berlin"
+      ]
+    },
+    {
       "s": "lidl",
       "b": "redbull",
       "ml": 250,
@@ -139,6 +199,54 @@
       "until": "2026-11-07",
       "r": [
         "essen"
+      ]
+    },
+    {
+      "s": "marktkauf",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.89,
+      "was": 1.59,
+      "until": "2026-11-07",
+      "note": "Vergleichspreis",
+      "sh": "Marktkauf Dortmund",
+      "r": [
+        "dortmund",
+        "stuttgart"
+      ]
+    },
+    {
+      "s": "mueller",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.59,
+      "until": "2026-11-07",
+      "sh": "Müller Bonn",
+      "r": [
+        "aachen",
+        "berlin",
+        "bonn",
+        "bremen",
+        "leipzig"
+      ]
+    },
+    {
+      "s": "netto",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.88,
+      "was": 1.59,
+      "until": "2026-11-07",
+      "sh": "Netto Marken-Discount Düsseldorf",
+      "r": [
+        "berlin",
+        "dortmund",
+        "dresden",
+        "duesseldorf"
       ]
     },
     {
