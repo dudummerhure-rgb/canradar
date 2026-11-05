@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-05T00:20:14Z",
+  "generated": "2026-11-05T07:52:51Z",
   "stand": "2026-11-05",
   "regions": [
     {
@@ -138,14 +138,9 @@
       "price": 0.89,
       "was": 1.59,
       "until": "2026-11-07",
-      "sh": "EDEKA Köln",
+      "sh": "EDEKA Hamburg",
       "r": [
-        "aachen",
-        "bonn",
-        "dortmund",
-        "duesseldorf",
-        "hamburg",
-        "koeln"
+        "hamburg"
       ]
     },
     {
@@ -160,19 +155,6 @@
       "sh": "EDEKA Stuttgart",
       "r": [
         "stuttgart"
-      ]
-    },
-    {
-      "s": "edeka",
-      "b": "redbull",
-      "ml": 250,
-      "n": 1,
-      "price": 0.99,
-      "was": 1.49,
-      "until": "2026-11-07",
-      "sh": "EDEKA Berlin",
-      "r": [
-        "berlin"
       ]
     },
     {
@@ -200,21 +182,6 @@
       ]
     },
     {
-      "s": "marktkauf",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.89,
-      "was": 1.59,
-      "until": "2026-11-07",
-      "note": "Vergleichspreis",
-      "sh": "Marktkauf Dortmund",
-      "r": [
-        "dortmund",
-        "stuttgart"
-      ]
-    },
-    {
       "s": "mueller",
       "b": "redbull",
       "ml": 250,
@@ -231,11 +198,10 @@
       "price": 0.88,
       "was": 1.59,
       "until": "2026-11-07",
-      "sh": "Netto Marken-Discount Düsseldorf",
+      "sh": "Netto Marken-Discount Dortmund",
       "r": [
         "dortmund",
-        "dresden",
-        "duesseldorf"
+        "dresden"
       ]
     },
     {
@@ -245,17 +211,7 @@
       "n": 24,
       "price": 34.99,
       "was": 39.99,
-      "until": "2026-11-07",
-      "sh": "Netto Marken-Discount Aachen",
-      "r": [
-        "aachen",
-        "berlin",
-        "dortmund",
-        "frankfurt",
-        "hamburg",
-        "leipzig",
-        "muenchen"
-      ]
+      "until": "2026-11-07"
     },
     {
       "s": "netto",
