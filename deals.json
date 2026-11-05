@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-04T18:36:05Z",
-  "stand": "2026-11-04",
+  "generated": "2026-11-05T00:20:14Z",
+  "stand": "2026-11-05",
   "regions": [
     {
       "id": "koeln",
@@ -157,21 +157,19 @@
       "was": 1.59,
       "until": "2026-11-07",
       "note": "Vergleichspreis",
-      "sh": "EDEKA Frankfurt",
+      "sh": "EDEKA Stuttgart",
       "r": [
-        "frankfurt",
         "stuttgart"
       ]
     },
     {
       "s": "edeka",
-      "b": "monster",
-      "ml": 500,
+      "b": "redbull",
+      "ml": 250,
       "n": 1,
       "price": 0.99,
-      "was": 1.59,
+      "was": 1.49,
       "until": "2026-11-07",
-      "note": "Vergleichspreis",
       "sh": "EDEKA Berlin",
       "r": [
         "berlin"
@@ -235,10 +233,28 @@
       "until": "2026-11-07",
       "sh": "Netto Marken-Discount Düsseldorf",
       "r": [
-        "berlin",
         "dortmund",
         "dresden",
         "duesseldorf"
+      ]
+    },
+    {
+      "s": "netto",
+      "b": "redbull",
+      "ml": 250,
+      "n": 24,
+      "price": 34.99,
+      "was": 39.99,
+      "until": "2026-11-07",
+      "sh": "Netto Marken-Discount Aachen",
+      "r": [
+        "aachen",
+        "berlin",
+        "dortmund",
+        "frankfurt",
+        "hamburg",
+        "leipzig",
+        "muenchen"
       ]
     },
     {
