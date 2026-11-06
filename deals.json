@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-05T22:40:29Z",
-  "stand": "2026-11-05",
+  "generated": "2026-11-06T03:22:52Z",
+  "stand": "2026-11-06",
   "regions": [
     {
       "id": "koeln",
@@ -138,10 +138,14 @@
       "price": 0.89,
       "was": 1.59,
       "until": "2026-11-07",
-      "sh": "EDEKA Bonn",
+      "sh": "EDEKA Köln",
       "r": [
+        "aachen",
         "bonn",
-        "hamburg"
+        "dortmund",
+        "duesseldorf",
+        "hamburg",
+        "koeln"
       ]
     },
     {
@@ -193,10 +197,12 @@
       "price": 0.88,
       "was": 1.59,
       "until": "2026-11-07",
-      "sh": "Netto Marken-Discount Dortmund",
+      "sh": "Netto Marken-Discount Düsseldorf",
       "r": [
+        "berlin",
         "dortmund",
-        "dresden"
+        "dresden",
+        "duesseldorf"
       ]
     },
     {
@@ -216,6 +222,15 @@
       "price": 1.49,
       "was": 1.99,
       "until": "2026-11-07"
+    },
+    {
+      "s": "penny",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.89,
+      "was": 1.49,
+      "until": "2026-11-08"
     }
   ],
   "empty": {}
