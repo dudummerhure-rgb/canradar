@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-06T03:22:52Z",
+  "generated": "2026-11-06T12:00:26Z",
   "stand": "2026-11-06",
   "regions": [
     {
@@ -157,8 +157,9 @@
       "was": 1.59,
       "until": "2026-11-07",
       "note": "Vergleichspreis",
-      "sh": "EDEKA Stuttgart",
+      "sh": "EDEKA Frankfurt",
       "r": [
+        "frankfurt",
         "stuttgart"
       ]
     },
@@ -230,7 +231,10 @@
       "n": 1,
       "price": 0.89,
       "was": 1.49,
-      "until": "2026-11-08"
+      "until": "2026-11-08",
+      "r": [
+        "essen"
+      ]
     }
   ],
   "empty": {}
