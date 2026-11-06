@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-06T12:00:26Z",
+  "generated": "2026-11-06T19:16:45Z",
   "stand": "2026-11-06",
   "regions": [
     {
@@ -138,14 +138,11 @@
       "price": 0.89,
       "was": 1.59,
       "until": "2026-11-07",
-      "sh": "EDEKA Köln",
+      "sh": "EDEKA Aachen",
       "r": [
         "aachen",
-        "bonn",
         "dortmund",
-        "duesseldorf",
-        "hamburg",
-        "koeln"
+        "hamburg"
       ]
     },
     {
