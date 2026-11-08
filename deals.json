@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-07T21:44:33Z",
-  "stand": "2026-11-07",
+  "generated": "2026-11-08T01:18:10Z",
+  "stand": "2026-11-08",
   "regions": [
     {
       "id": "koeln",
@@ -118,148 +118,13 @@
   ],
   "deals": [
     {
-      "s": "edeka",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.79,
-      "was": 1.59,
-      "until": "2026-11-07",
-      "sh": "EDEKA München",
-      "r": [
-        "muenchen"
-      ]
-    },
-    {
-      "s": "edeka",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.89,
-      "was": 1.59,
-      "until": "2026-11-07",
-      "sh": "EDEKA Aachen",
-      "r": [
-        "aachen",
-        "dortmund",
-        "hamburg"
-      ]
-    },
-    {
-      "s": "edeka",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.89,
-      "was": 1.59,
-      "until": "2026-11-07",
-      "note": "Vergleichspreis",
-      "sh": "EDEKA Stuttgart",
-      "r": [
-        "stuttgart"
-      ]
-    },
-    {
-      "s": "lidl",
-      "b": "redbull",
-      "ml": 250,
-      "n": 1,
-      "price": 0.99,
-      "was": 1.49,
-      "until": "2026-11-07"
-    },
-    {
-      "s": "lidl",
-      "b": "redbull",
-      "ml": 250,
-      "n": 6,
-      "price": 4.99,
-      "was": 7.49,
-      "until": "2026-11-07"
-    },
-    {
-      "s": "marktkauf",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.89,
-      "was": 1.59,
-      "until": "2026-11-07",
-      "note": "Vergleichspreis",
-      "sh": "Marktkauf Stuttgart",
-      "r": [
-        "stuttgart"
-      ]
-    },
-    {
-      "s": "marktkauf",
-      "b": "redbull",
-      "ml": 250,
-      "n": 1,
-      "price": 0.99,
-      "was": 1.49,
-      "until": "2026-11-07",
-      "sh": "Marktkauf Nürnberg",
-      "r": [
-        "leipzig",
-        "nuernberg"
-      ]
-    },
-    {
       "s": "mueller",
       "b": "redbull",
       "ml": 250,
       "n": 1,
       "price": 0.99,
       "was": 1.59,
-      "until": "2026-11-14"
-    },
-    {
-      "s": "mueller",
-      "b": "redbull",
-      "ml": 250,
-      "n": 1,
-      "price": 0.99,
-      "was": 1.59,
-      "until": "2026-11-07",
-      "r": [
-        "essen"
-      ]
-    },
-    {
-      "s": "netto",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.88,
-      "was": 1.59,
-      "until": "2026-11-07",
-      "sh": "Netto Marken-Discount Düsseldorf",
-      "r": [
-        "dortmund",
-        "duesseldorf"
-      ]
-    },
-    {
-      "s": "netto",
-      "b": "redbull",
-      "ml": 250,
-      "n": 24,
-      "price": 34.99,
-      "was": 39.99,
-      "until": "2026-11-07",
-      "r": [
-        "essen"
-      ]
-    },
-    {
-      "s": "netto",
-      "b": "redbull",
-      "ml": 355,
-      "n": 1,
-      "price": 1.49,
-      "was": 1.99,
-      "until": "2026-11-07",
+      "until": "2026-11-14",
       "r": [
         "essen"
       ]
