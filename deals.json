@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-08T20:24:26Z",
-  "stand": "2026-11-08",
+  "generated": "2026-11-09T00:44:38Z",
+  "stand": "2026-11-09",
   "regions": [
     {
       "id": "koeln",
@@ -118,6 +118,84 @@
   ],
   "deals": [
     {
+      "s": "edeka",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.49,
+      "until": "2026-11-14"
+    },
+    {
+      "s": "edeka",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.49,
+      "until": "2026-11-14",
+      "note": "Vergleichspreis",
+      "sh": "EDEKA Frankfurt",
+      "r": [
+        "frankfurt",
+        "stuttgart"
+      ]
+    },
+    {
+      "s": "edeka",
+      "b": "redbull",
+      "ml": 330,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.49,
+      "until": "2026-11-14",
+      "sh": "EDEKA München",
+      "r": [
+        "muenchen"
+      ]
+    },
+    {
+      "s": "lidl",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.49,
+      "until": "2026-11-14"
+    },
+    {
+      "s": "marktkauf",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.49,
+      "until": "2026-11-14",
+      "note": "Vergleichspreis",
+      "sh": "Marktkauf Dortmund",
+      "r": [
+        "dortmund",
+        "stuttgart"
+      ]
+    },
+    {
+      "s": "marktkauf",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.49,
+      "until": "2026-11-14",
+      "sh": "Marktkauf Köln",
+      "r": [
+        "duesseldorf",
+        "hamburg",
+        "koeln",
+        "leipzig",
+        "nuernberg"
+      ]
+    },
+    {
       "s": "mueller",
       "b": "redbull",
       "ml": 250,
@@ -130,16 +208,22 @@
       ]
     },
     {
+      "s": "netto",
+      "b": "redbull",
+      "ml": 250,
+      "n": 24,
+      "price": 34.99,
+      "was": 39.99,
+      "until": "2026-11-14"
+    },
+    {
       "s": "penny",
       "b": "redbull",
       "ml": 250,
       "n": 1,
       "price": 0.89,
       "was": 1.49,
-      "until": "2026-11-08",
-      "r": [
-        "essen"
-      ]
+      "until": "2026-11-15"
     }
   ],
   "empty": {}
