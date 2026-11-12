@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-11T21:14:40Z",
-  "stand": "2026-11-11",
+  "generated": "2026-11-12T02:50:40Z",
+  "stand": "2026-11-12",
   "regions": [
     {
       "id": "koeln",
@@ -155,6 +155,19 @@
       ]
     },
     {
+      "s": "kaufland",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.79,
+      "was": 1.59,
+      "until": "2026-11-14",
+      "sh": "Kaufland Aachen",
+      "r": [
+        "aachen"
+      ]
+    },
+    {
       "s": "lidl",
       "b": "redbull",
       "ml": 250,
@@ -171,14 +184,11 @@
       "price": 0.99,
       "was": 1.49,
       "until": "2026-11-14",
-      "sh": "Marktkauf Köln",
+      "note": "Vergleichspreis",
+      "sh": "Marktkauf Dortmund",
       "r": [
         "dortmund",
-        "duesseldorf",
-        "hamburg",
-        "koeln",
-        "leipzig",
-        "nuernberg"
+        "stuttgart"
       ]
     },
     {
@@ -189,10 +199,13 @@
       "price": 0.99,
       "was": 1.49,
       "until": "2026-11-14",
-      "note": "Vergleichspreis",
-      "sh": "Marktkauf Stuttgart",
+      "sh": "Marktkauf Köln",
       "r": [
-        "stuttgart"
+        "duesseldorf",
+        "hamburg",
+        "koeln",
+        "leipzig",
+        "nuernberg"
       ]
     },
     {
