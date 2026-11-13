@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-13T06:28:15Z",
+  "generated": "2026-11-13T15:18:14Z",
   "stand": "2026-11-13",
   "regions": [
     {
@@ -171,11 +171,14 @@
       "price": 0.99,
       "was": 1.49,
       "until": "2026-11-14",
-      "note": "Vergleichspreis",
-      "sh": "Marktkauf Dortmund",
+      "sh": "Marktkauf Köln",
       "r": [
         "dortmund",
-        "stuttgart"
+        "duesseldorf",
+        "hamburg",
+        "koeln",
+        "leipzig",
+        "nuernberg"
       ]
     },
     {
@@ -186,13 +189,10 @@
       "price": 0.99,
       "was": 1.49,
       "until": "2026-11-14",
-      "sh": "Marktkauf Köln",
+      "note": "Vergleichspreis",
+      "sh": "Marktkauf Stuttgart",
       "r": [
-        "duesseldorf",
-        "hamburg",
-        "koeln",
-        "leipzig",
-        "nuernberg"
+        "stuttgart"
       ]
     },
     {
