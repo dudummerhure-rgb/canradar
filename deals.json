@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-18T12:56:31Z",
+  "generated": "2026-11-18T21:20:15Z",
   "stand": "2026-11-18",
   "regions": [
     {
@@ -125,7 +125,18 @@
       "price": 8.88,
       "was": 15.9,
       "until": "2026-11-21",
-      "note": "Vergleichspreis"
+      "note": "Vergleichspreis",
+      "sh": "Lidl Köln",
+      "r": [
+        "aachen",
+        "bonn",
+        "bremen",
+        "essen",
+        "hannover",
+        "koeln",
+        "leipzig",
+        "nuernberg"
+      ]
     },
     {
       "s": "marktkauf",
