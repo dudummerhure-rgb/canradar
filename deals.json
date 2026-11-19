@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-19T03:09:40Z",
+  "generated": "2026-11-19T12:48:58Z",
   "stand": "2026-11-19",
   "regions": [
     {
@@ -129,12 +129,12 @@
       "sh": "Lidl Köln",
       "r": [
         "aachen",
-        "bonn",
         "bremen",
         "essen",
         "hannover",
         "koeln",
-        "leipzig"
+        "leipzig",
+        "nuernberg"
       ]
     },
     {
