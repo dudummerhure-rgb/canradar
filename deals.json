@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-19T12:48:58Z",
+  "generated": "2026-11-19T21:22:42Z",
   "stand": "2026-11-19",
   "regions": [
     {
@@ -126,15 +126,13 @@
       "was": 15.9,
       "until": "2026-11-21",
       "note": "Vergleichspreis",
-      "sh": "Lidl Köln",
+      "sh": "Lidl Aachen",
       "r": [
         "aachen",
         "bremen",
         "essen",
         "hannover",
-        "koeln",
-        "leipzig",
-        "nuernberg"
+        "leipzig"
       ]
     },
     {
