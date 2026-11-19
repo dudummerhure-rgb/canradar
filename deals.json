@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-18T21:20:15Z",
-  "stand": "2026-11-18",
+  "generated": "2026-11-19T03:09:40Z",
+  "stand": "2026-11-19",
   "regions": [
     {
       "id": "koeln",
@@ -134,8 +134,7 @@
         "essen",
         "hannover",
         "koeln",
-        "leipzig",
-        "nuernberg"
+        "leipzig"
       ]
     },
     {
