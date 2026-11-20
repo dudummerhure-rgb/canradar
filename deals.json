@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-19T21:22:42Z",
-  "stand": "2026-11-19",
+  "generated": "2026-11-20T02:59:16Z",
+  "stand": "2026-11-20",
   "regions": [
     {
       "id": "koeln",
@@ -128,11 +128,9 @@
       "note": "Vergleichspreis",
       "sh": "Lidl Aachen",
       "r": [
-        "aachen",
         "bremen",
         "essen",
-        "hannover",
-        "leipzig"
+        "hannover"
       ]
     },
     {
@@ -165,6 +163,15 @@
       "n": 1,
       "price": 0.89,
       "was": 1.59,
+      "until": "2026-11-22"
+    },
+    {
+      "s": "penny",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.89,
+      "was": 1.49,
       "until": "2026-11-22"
     },
     {
