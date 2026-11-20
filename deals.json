@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-20T02:59:16Z",
+  "generated": "2026-11-20T11:17:30Z",
   "stand": "2026-11-20",
   "regions": [
     {
@@ -130,7 +130,7 @@
       "r": [
         "bremen",
         "essen",
-        "hannover"
+        "leipzig"
       ]
     },
     {
@@ -172,7 +172,10 @@
       "n": 1,
       "price": 0.89,
       "was": 1.49,
-      "until": "2026-11-22"
+      "until": "2026-11-22",
+      "r": [
+        "essen"
+      ]
     },
     {
       "s": "rewe",
