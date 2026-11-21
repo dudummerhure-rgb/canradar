@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-21T17:19:52Z",
+  "generated": "2026-11-21T23:01:53Z",
   "stand": "2026-11-21",
   "regions": [
     {
@@ -125,7 +125,10 @@
       "price": 8.88,
       "was": 15.9,
       "until": "2026-11-21",
-      "note": "Vergleichspreis"
+      "note": "Vergleichspreis",
+      "r": [
+        "essen"
+      ]
     },
     {
       "s": "marktkauf",
@@ -148,7 +151,10 @@
       "n": 1,
       "price": 0.88,
       "was": 1.59,
-      "until": "2026-11-21"
+      "until": "2026-11-21",
+      "r": [
+        "essen"
+      ]
     },
     {
       "s": "penny",
