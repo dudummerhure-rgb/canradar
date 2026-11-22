@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-21T23:01:53Z",
-  "stand": "2026-11-21",
+  "generated": "2026-11-22T02:58:57Z",
+  "stand": "2026-11-22",
   "regions": [
     {
       "id": "koeln",
@@ -118,52 +118,16 @@
   ],
   "deals": [
     {
-      "s": "lidl",
-      "b": "monster",
-      "ml": 500,
-      "n": 10,
-      "price": 8.88,
-      "was": 15.9,
-      "until": "2026-11-21",
-      "note": "Vergleichspreis",
-      "r": [
-        "essen"
-      ]
-    },
-    {
-      "s": "marktkauf",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.99,
-      "was": 1.59,
-      "until": "2026-11-21",
-      "note": "Vergleichspreis",
-      "sh": "Marktkauf Dortmund",
-      "r": [
-        "dortmund"
-      ]
-    },
-    {
-      "s": "netto",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.88,
-      "was": 1.59,
-      "until": "2026-11-21",
-      "r": [
-        "essen"
-      ]
-    },
-    {
       "s": "penny",
       "b": "monster",
       "ml": 500,
       "n": 1,
       "price": 0.89,
       "was": 1.59,
-      "until": "2026-11-22"
+      "until": "2026-11-22",
+      "r": [
+        "essen"
+      ]
     },
     {
       "s": "penny",
@@ -176,16 +140,6 @@
       "r": [
         "essen"
       ]
-    },
-    {
-      "s": "rewe",
-      "b": "redbull",
-      "ml": 250,
-      "n": 1,
-      "price": 0.99,
-      "was": 1.49,
-      "until": "2026-11-21",
-      "note": "Vergleichspreis"
     }
   ],
   "empty": {}
