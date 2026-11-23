@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-22T18:26:10Z",
-  "stand": "2026-11-22",
+  "generated": "2026-11-23T00:10:37Z",
+  "stand": "2026-11-23",
   "regions": [
     {
       "id": "koeln",
@@ -118,15 +118,113 @@
   ],
   "deals": [
     {
-      "s": "penny",
+      "s": "edeka",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.79,
+      "was": 1.59,
+      "until": "2026-11-28",
+      "note": "Vergleichspreis",
+      "sh": "EDEKA Hamburg",
+      "r": [
+        "hamburg"
+      ]
+    },
+    {
+      "s": "edeka",
       "b": "monster",
       "ml": 500,
       "n": 1,
       "price": 0.89,
       "was": 1.59,
-      "until": "2026-11-22",
+      "until": "2026-11-28",
+      "sh": "EDEKA München",
       "r": [
-        "essen"
+        "muenchen"
+      ]
+    },
+    {
+      "s": "edeka",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.59,
+      "until": "2026-11-28",
+      "sh": "E center Köln",
+      "r": [
+        "aachen",
+        "bonn",
+        "dortmund",
+        "duesseldorf",
+        "frankfurt",
+        "koeln"
+      ]
+    },
+    {
+      "s": "edeka",
+      "b": "redbull",
+      "ml": 250,
+      "n": 4,
+      "price": 2.79,
+      "was": 5.49,
+      "until": "2026-11-28",
+      "sh": "EDEKA Dresden",
+      "r": [
+        "dresden"
+      ]
+    },
+    {
+      "s": "kaufland",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.85,
+      "was": 1.49,
+      "until": "2026-11-28",
+      "note": "Vergleichspreis"
+    },
+    {
+      "s": "marktkauf",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.79,
+      "was": 1.59,
+      "until": "2026-11-28",
+      "note": "Vergleichspreis",
+      "sh": "Marktkauf Hamburg",
+      "r": [
+        "hamburg"
+      ]
+    },
+    {
+      "s": "marktkauf",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.59,
+      "until": "2026-11-28",
+      "note": "Vergleichspreis",
+      "sh": "Marktkauf Nürnberg",
+      "r": [
+        "leipzig",
+        "nuernberg"
+      ]
+    },
+    {
+      "s": "marktkauf",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.59,
+      "until": "2026-11-28",
+      "sh": "Marktkauf Stuttgart",
+      "r": [
+        "stuttgart"
       ]
     },
     {
@@ -136,10 +234,17 @@
       "n": 1,
       "price": 0.89,
       "was": 1.49,
-      "until": "2026-11-22",
-      "r": [
-        "essen"
-      ]
+      "until": "2026-11-29"
+    },
+    {
+      "s": "rewe",
+      "b": "monster",
+      "ml": 500,
+      "n": 1,
+      "price": 0.99,
+      "was": 1.59,
+      "until": "2026-11-28",
+      "note": "Vergleichspreis"
     }
   ],
   "empty": {}
