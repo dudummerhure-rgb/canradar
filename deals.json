@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-24T17:29:09Z",
-  "stand": "2026-11-24",
+  "generated": "2026-11-25T02:14:37Z",
+  "stand": "2026-11-25",
   "regions": [
     {
       "id": "koeln",
@@ -117,6 +117,23 @@
     }
   ],
   "deals": [
+    {
+      "s": "aldi",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.89,
+      "was": 1.49,
+      "until": "2026-11-28",
+      "sh": "ALDI Nord Berlin",
+      "r": [
+        "berlin",
+        "bremen",
+        "hamburg",
+        "hannover",
+        "leipzig"
+      ]
+    },
     {
       "s": "edeka",
       "b": "monster",
