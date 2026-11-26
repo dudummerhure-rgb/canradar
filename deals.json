@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "generated": "2026-11-25T22:23:41Z",
-  "stand": "2026-11-25",
+  "generated": "2026-11-26T04:55:11Z",
+  "stand": "2026-11-26",
   "regions": [
     {
       "id": "koeln",
@@ -125,13 +125,10 @@
       "price": 0.89,
       "was": 1.49,
       "until": "2026-11-28",
-      "sh": "ALDI Nord Berlin",
+      "sh": "ALDI Nord Bremen",
       "r": [
-        "berlin",
         "bremen",
-        "hamburg",
-        "hannover",
-        "leipzig"
+        "hannover"
       ]
     },
     {
@@ -142,7 +139,6 @@
       "price": 0.79,
       "was": 1.59,
       "until": "2026-11-28",
-      "note": "Vergleichspreis",
       "sh": "EDEKA Hamburg",
       "r": [
         "hamburg"
@@ -174,22 +170,8 @@
         "aachen",
         "bonn",
         "dortmund",
-        "duesseldorf",
         "frankfurt",
         "koeln"
-      ]
-    },
-    {
-      "s": "edeka",
-      "b": "redbull",
-      "ml": 250,
-      "n": 4,
-      "price": 2.79,
-      "was": 5.49,
-      "until": "2026-11-28",
-      "sh": "EDEKA Dresden",
-      "r": [
-        "dresden"
       ]
     },
     {
@@ -201,20 +183,6 @@
       "was": 1.49,
       "until": "2026-11-28",
       "note": "Vergleichspreis"
-    },
-    {
-      "s": "marktkauf",
-      "b": "monster",
-      "ml": 500,
-      "n": 1,
-      "price": 0.79,
-      "was": 1.59,
-      "until": "2026-11-28",
-      "note": "Vergleichspreis",
-      "sh": "Marktkauf Hamburg",
-      "r": [
-        "hamburg"
-      ]
     },
     {
       "s": "marktkauf",
