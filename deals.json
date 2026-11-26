@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-26T04:55:11Z",
+  "generated": "2026-11-26T14:58:32Z",
   "stand": "2026-11-26",
   "regions": [
     {
@@ -125,9 +125,8 @@
       "price": 0.89,
       "was": 1.49,
       "until": "2026-11-28",
-      "sh": "ALDI Nord Bremen",
+      "sh": "ALDI Nord Hannover",
       "r": [
-        "bremen",
         "hannover"
       ]
     },
@@ -139,6 +138,7 @@
       "price": 0.79,
       "was": 1.59,
       "until": "2026-11-28",
+      "note": "Vergleichspreis",
       "sh": "EDEKA Hamburg",
       "r": [
         "hamburg"
@@ -165,13 +165,12 @@
       "price": 0.99,
       "was": 1.59,
       "until": "2026-11-28",
-      "sh": "E center Köln",
+      "sh": "E center Bonn",
       "r": [
         "aachen",
         "bonn",
         "dortmund",
-        "frankfurt",
-        "koeln"
+        "frankfurt"
       ]
     },
     {
