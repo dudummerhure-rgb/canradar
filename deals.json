@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-27T08:01:13Z",
+  "generated": "2026-11-27T18:05:43Z",
   "stand": "2026-11-27",
   "regions": [
     {
@@ -117,19 +117,6 @@
     }
   ],
   "deals": [
-    {
-      "s": "aldi",
-      "b": "redbull",
-      "ml": 250,
-      "n": 1,
-      "price": 0.89,
-      "was": 1.49,
-      "until": "2026-11-28",
-      "sh": "ALDI Nord Hannover",
-      "r": [
-        "hannover"
-      ]
-    },
     {
       "s": "edeka",
       "b": "monster",
