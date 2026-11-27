@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-26T23:42:45Z",
+  "generated": "2026-11-27T08:01:13Z",
   "stand": "2026-11-27",
   "regions": [
     {
@@ -118,6 +118,19 @@
   ],
   "deals": [
     {
+      "s": "aldi",
+      "b": "redbull",
+      "ml": 250,
+      "n": 1,
+      "price": 0.89,
+      "was": 1.49,
+      "until": "2026-11-28",
+      "sh": "ALDI Nord Hannover",
+      "r": [
+        "hannover"
+      ]
+    },
+    {
       "s": "edeka",
       "b": "monster",
       "ml": 500,
@@ -156,6 +169,7 @@
         "aachen",
         "bonn",
         "dortmund",
+        "duesseldorf",
         "frankfurt",
         "koeln"
       ]
@@ -196,20 +210,6 @@
       "sh": "Marktkauf Stuttgart",
       "r": [
         "stuttgart"
-      ]
-    },
-    {
-      "s": "penny",
-      "b": "monster",
-      "ml": 500,
-      "n": 10,
-      "price": 8.89,
-      "was": 15.9,
-      "until": "2026-11-29",
-      "note": "Vergleichspreis",
-      "sh": "Penny Berlin",
-      "r": [
-        "berlin"
       ]
     },
     {
