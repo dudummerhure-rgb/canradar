@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "generated": "2026-11-28T01:23:10Z",
+  "generated": "2026-11-28T10:09:58Z",
   "stand": "2026-11-28",
   "regions": [
     {
@@ -125,7 +125,6 @@
       "price": 0.79,
       "was": 1.59,
       "until": "2026-11-28",
-      "note": "Vergleichspreis",
       "sh": "EDEKA Hamburg",
       "r": [
         "hamburg"
